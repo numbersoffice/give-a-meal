@@ -5,8 +5,6 @@ export async function GET(request: NextRequest) {
   try {
     const session = request.cookies.get("session");
 
-    console.log("Session: ", session);
-
     if (session) {
       const dt = await verifySessionCookie(session.value);
 

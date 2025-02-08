@@ -46,6 +46,8 @@ export async function GET(request: NextRequest) {
 
     cookies().set(options);
 
+    console.log("Origin: ", request.nextUrl.origin);
+
     return NextResponse.redirect(
       `${request.nextUrl.origin}/${lang}/donors/profile`
     );
