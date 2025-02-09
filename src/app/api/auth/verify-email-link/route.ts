@@ -24,7 +24,10 @@ export async function GET(request: NextRequest) {
   newUrl.hostname = host;
   newUrl.port = "";
   const url = newUrl.toString();
-  console.log(url);
+
+  console.log("origin: ", origin);
+  console.log("host: ", host);
+  console.log("request url: ", request.url);
 
   // Get email query parameters
   const email = request.nextUrl.searchParams.get("email");
