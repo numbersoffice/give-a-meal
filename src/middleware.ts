@@ -31,6 +31,19 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // SYSTEM: Modify request for use behind a reverse proxy
+  const forwardedHost = request.headers.get("x-forwarded-host");
+  console.log(`x-forwarded-host: ${forwardedHost}`);
+  const headers_internal = new Headers(request.headers);
+  forwardedHost && headers_internal.set("host", forwardedHost);
+  const request_internal = new Request(request.nextUrl.toString(), {
+    headers: headers_internal,
+    method: request.method,
+    body: request.body,
+  });
+
+  console.log(`New host header: ${request_internal.headers.get("host")}`);
+
   // Locale: paths that are missing a locale
   currentPathname = getPathnameWithLocale(request);
 
