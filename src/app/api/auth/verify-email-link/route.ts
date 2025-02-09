@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
 
   console.log("origin: ", origin);
   console.log("host: ", host);
-  console.log("request url: ", request.url);
+  console.log("Modified request url: ", url);
 
   // Get email query parameters
   const email = request.nextUrl.searchParams.get("email");
