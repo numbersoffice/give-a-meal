@@ -14,20 +14,25 @@ import { NextRequest, NextResponse } from "next/server";
 initAdminApp();
 
 export async function GET(request: NextRequest) {
-  const origin = getProxyOrigin(request);
   let userCredential: UserCredential | undefined;
+
+  // Replace origin in case the request is coming from a proxy
+  const origin = getProxyOrigin(request);
+  const host = request.headers.get("host") || "localhost:3000";
+  const newUrl = new URL(request.url);
+  newUrl.hostname = host;
+  newUrl.port = "";
+  const url = newUrl.toString();
+  console.log(url);
 
   // Get email query parameters
   const email = request.nextUrl.searchParams.get("email");
   const lang = request.nextUrl.searchParams.get("user-lang");
 
-  const isValid = isSignInWithEmailLink(authConfig, request.url);
-
-  console.log("Email auth request: ", email);
-  console.log(request.url);
+  const isValid = isSignInWithEmailLink(authConfig, url);
 
   if (email && isValid) {
-    userCredential = await signInWithEmailLink(authConfig, email, request.url);
+    userCredential = await signInWithEmailLink(authConfig, email, url);
   } else {
     NextResponse.redirect(origin + "/donors/login");
   }
