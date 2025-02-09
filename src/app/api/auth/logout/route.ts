@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   if (session) {
     try {
       const response = NextResponse.redirect(new URL(`/${lang}`, origin));
-      // response.cookies.delete({ name: "session", domain: host });
+      response.cookies.delete("session");
       return response;
     } catch (error: any) {
       return new NextResponse(JSON.stringify({ error: error.message }), {
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     }
   } else {
     const response = NextResponse.redirect(new URL(`/${lang}`, origin));
-    // response.cookies.delete("session");
+    response.cookies.delete("session");
     return response;
   }
 }
