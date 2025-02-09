@@ -19,8 +19,8 @@ export async function GET(request: NextRequest) {
 
   // Replace origin in case the request is coming from a proxy
   const origin = getProxyOrigin(request);
-  const host = request.headers.get("host") || "localhost:3000";
-  // const host = hostHeader.replace("www.", "");
+  const hostHeader = request.headers.get("host") || "localhost:3000";
+  const host = hostHeader.replace("www.", "");
   const newUrl = new URL(request.url);
   newUrl.hostname = host;
   newUrl.port = "";
