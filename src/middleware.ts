@@ -32,6 +32,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // SYSTEM: Modify request for use behind a reverse proxy
+  console.log(`Old host: ${request.headers.get("host")}`);
   const forwardedHost = request.headers.get("x-forwarded-host");
   console.log(`x-forwarded-host: ${forwardedHost}`);
   const headers_internal = new Headers(request.headers);
@@ -93,8 +94,6 @@ export async function middleware(request: NextRequest) {
 
   // Response: create new URL
   const url = new URL(currentPathname, request.nextUrl.origin);
-  console.log(`New URL: ${url}`);
-  console.log(`Host Header: ${request.headers.get("host")}`);
 
   // Response: return the modified url and query parameters
   // Prevent re-direct if the current pathname is the same as the request pathname
