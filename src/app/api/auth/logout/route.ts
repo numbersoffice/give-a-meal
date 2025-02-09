@@ -6,7 +6,8 @@ import getProxyOrigin from "@/utils/getProxyOrigin";
 initAdminApp();
 
 export async function GET(request: NextRequest) {
-  const host = request.headers.get("host") || "localhost:3000";
+  const hostHeader = request.headers.get("host") || "localhost:3000";
+  const host = hostHeader.replace("www.", "");
   const origin = getProxyOrigin(request);
 
   const session = cookies().get("session");
