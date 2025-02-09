@@ -49,31 +49,18 @@ export async function GET(request: NextRequest) {
       expiresIn,
     });
 
-    // const isDev = process.env.NODE_ENV === "development";
-    // const options = {
-    //   name: "session",
-    //   value: sessionCookie,
-    //   maxAge: expiresIn,
-    //   // httpOnly: true,
-    //   // secure: isDev ? false : true,
-    // };
-
-    // cookies().set(options);
-
-    // return NextResponse.redirect(`${origin}/${lang}/donors/profile`);
-    // Create a redirect response
-    const response = NextResponse.redirect(`${origin}/${lang}/donors/profile`);
-
-    // Set the cookie on the response
-    response.cookies.set("session", sessionCookie, {
+    const isDev = process.env.NODE_ENV === "development";
+    const options = {
+      name: "session",
+      value: sessionCookie,
       maxAge: expiresIn,
-      httpOnly: true, // Uncomment if you want it to be HTTP-only
-      secure: process.env.NODE_ENV !== "development",
-      // Optionally add sameSite if needed:
-      // sameSite: "lax",
-    });
+      httpOnly: true,
+      secure: isDev ? false : true,
+    };
 
-    return response;
+    cookies().set(options);
+
+    return NextResponse.redirect(`${origin}/${lang}/donors/profile`);
   } else {
     return NextResponse.redirect(`${origin}/${lang}/donors/login`);
   }
