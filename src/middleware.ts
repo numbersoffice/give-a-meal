@@ -34,6 +34,7 @@ export async function middleware(request: NextRequest) {
   // SYSTEM: Modify request for use behind a reverse proxy
   console.log(`Host Header: ${request.headers.get("host")}`);
   console.log(`Request Origin: ${request.nextUrl.origin}`);
+  console.log(`Request Host: ${request.nextUrl.host}`);
   // const forwardedHost = request.headers.get("x-forwarded-host");
   // console.log(`x-forwarded-host: ${forwardedHost}`);
   // const headers_internal = new Headers(request.headers);
