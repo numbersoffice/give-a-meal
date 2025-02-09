@@ -20,6 +20,16 @@ const protectedPaths = ["/donors/profile"];
  * @returns request
  */
 export async function middleware(request: NextRequest) {
+  // SYSTEM
+  // Get host from header for use behind a reverse proxy.
+  // Nextjs does not use it by default
+  const host = request.headers.get("host");
+  if (!host) {
+    console.log("MIDDLEWARE: Host header not found");
+    return NextResponse.next();
+  }
+  request.nextUrl.host = host;
+
   let currentPathname = request.nextUrl.pathname;
 
   // Skip: paths that should not have a locale
@@ -65,10 +75,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(
-        new URL(
-          currentPathname + request.nextUrl.search,
-          request.nextUrl.origin
-        )
+        new URL(currentPathname + request.nextUrl.search, host)
       );
     }
   }
@@ -95,7 +102,7 @@ export async function middleware(request: NextRequest) {
   currentPathname = `${currentPathname}?${params.toString()}`;
 
   // Response: create new URL
-  const url = new URL(currentPathname, request.nextUrl.origin);
+  const url = new URL(currentPathname, host);
 
   // Response: return the modified url and query parameters
   // Prevent re-direct if the current pathname is the same as the request pathname
