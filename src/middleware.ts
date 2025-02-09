@@ -28,7 +28,6 @@ export async function middleware(request: NextRequest) {
     console.log("MIDDLEWARE: Host header not found");
     return NextResponse.next();
   }
-  request.nextUrl.host = host;
 
   let currentPathname = request.nextUrl.pathname;
 
@@ -40,22 +39,6 @@ export async function middleware(request: NextRequest) {
   if (shouldExclude) {
     return NextResponse.next();
   }
-
-  // SYSTEM: Modify request for use behind a reverse proxy
-  console.log(`Host Header: ${request.headers.get("host")}`);
-  console.log(`Request Origin: ${request.nextUrl.origin}`);
-  console.log(`Request Host: ${request.nextUrl.host}`);
-  // const forwardedHost = request.headers.get("x-forwarded-host");
-  // console.log(`x-forwarded-host: ${forwardedHost}`);
-  // const headers_internal = new Headers(request.headers);
-  // forwardedHost && headers_internal.set("host", forwardedHost);
-  // const request_internal = new Request(request.nextUrl.toString(), {
-  //   headers: headers_internal,
-  //   method: request.method,
-  //   body: request.body,
-  // });
-
-  // console.log(`New host header: ${request_internal.headers.get("host")}`);
 
   // Locale: paths that are missing a locale
   currentPathname = getPathnameWithLocale(request);
@@ -84,7 +67,7 @@ export async function middleware(request: NextRequest) {
   // 1) Return pathname unchanged if no autnetication is needed
   // 2) Return data with user info if authenticated
   // 3) Return pathname to login url if not authenticated
-  const result = await handleAuthentication(request, currentPathname);
+  const result = await handleAuthentication(request, currentPathname, host);
   if (result.pathname) {
     currentPathname = result.pathname;
   }
@@ -120,6 +103,7 @@ export async function middleware(request: NextRequest) {
 type AuthResult = {
   pathname: string;
   data: null | { uid: string; email: string };
+  host: string;
 };
 
 // Adjusted routing logic to only determine the target pathname
@@ -166,20 +150,21 @@ function getLocale(request: NextRequest): string | undefined {
  */
 async function handleAuthentication(
   request: NextRequest,
-  pathname: string
+  pathname: string,
+  host: string
 ): Promise<AuthResult> {
   let authResulst: AuthResult = {
     pathname: pathname,
     data: null,
+    host: host,
   };
 
   // Verify ID token
   try {
     const cookie = request.headers.get("cookie") || "";
-    let response = await fetch(
-      `${request.nextUrl.origin}/api/auth/verify-id-token`,
-      { headers: { cookie } }
-    );
+    let response = await fetch(`${host}/api/auth/verify-id-token`, {
+      headers: { cookie },
+    });
 
     // Return user data
     if (response.ok) {
