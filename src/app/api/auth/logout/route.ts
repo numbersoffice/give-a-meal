@@ -5,12 +5,18 @@ import { cookies } from "next/headers";
 initAdminApp();
 
 export async function GET(request: NextRequest) {
+  // SYSTEM
+  // Get host from header for use behind a reverse proxy.
+  // Nextjs does not use it by default
+  const host = request.headers.get("host");
+  if (!host) return NextResponse.next();
+
   const session = cookies().get("session");
   const lang = request.nextUrl.searchParams.get("lang");
 
   if (session) {
     try {
-      const response = NextResponse.redirect(new URL(`/${lang}`, request.url));
+      const response = NextResponse.redirect(new URL(`/${lang}`, host));
       response.cookies.delete("session");
       return response;
     } catch (error: any) {
@@ -19,7 +25,7 @@ export async function GET(request: NextRequest) {
       });
     }
   } else {
-    const response = NextResponse.redirect(new URL(`/${lang}`, request.url));
+    const response = NextResponse.redirect(new URL(`/${lang}`, host));
     response.cookies.delete("session");
     return response;
   }

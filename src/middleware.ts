@@ -24,14 +24,7 @@ export async function middleware(request: NextRequest) {
   // Get host from header for use behind a reverse proxy.
   // Nextjs does not use it by default
   const host = request.headers.get("host");
-  if (!host) {
-    console.log("MIDDLEWARE: Host header not found");
-    return NextResponse.next();
-  }
-
-  console.log("MIDDLEWARE: Host header found", host);
-  console.log("MIDDLEWARE: request.url", request.url);
-  console.log("MIDDLEWARE: request.nextUrl.origin", request.nextUrl.origin);
+  if (!host) return NextResponse.next();
 
   let currentPathname = request.nextUrl.pathname;
 
@@ -71,7 +64,7 @@ export async function middleware(request: NextRequest) {
   // 1) Return pathname unchanged if no autnetication is needed
   // 2) Return data with user info if authenticated
   // 3) Return pathname to login url if not authenticated
-  const result = await handleAuthentication(request, currentPathname, host);
+  const result = await handleAuthentication(request, currentPathname);
   if (result.pathname) {
     currentPathname = result.pathname;
   }
@@ -107,7 +100,6 @@ export async function middleware(request: NextRequest) {
 type AuthResult = {
   pathname: string;
   data: null | { uid: string; email: string };
-  host: string;
 };
 
 // Adjusted routing logic to only determine the target pathname
@@ -154,13 +146,13 @@ function getLocale(request: NextRequest): string | undefined {
  */
 async function handleAuthentication(
   request: NextRequest,
-  pathname: string,
-  host: string
+  pathname: string
 ): Promise<AuthResult> {
+  const host = request.headers.get("host");
+
   let authResulst: AuthResult = {
     pathname: pathname,
     data: null,
-    host: host,
   };
 
   // Verify ID token

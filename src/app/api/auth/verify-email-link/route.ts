@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from "next/server";
 initAdminApp();
 
 export async function GET(request: NextRequest) {
+  const host = request.headers.get("host");
   let userCredential: UserCredential | undefined;
 
   // Get email query parameters
@@ -21,10 +22,13 @@ export async function GET(request: NextRequest) {
 
   const isValid = isSignInWithEmailLink(authConfig, request.url);
 
+  console.log("Email auth request: ", email);
+  console.log(request.url);
+
   if (email && isValid) {
     userCredential = await signInWithEmailLink(authConfig, email, request.url);
   } else {
-    NextResponse.redirect(request.url + "/donors/login");
+    NextResponse.redirect(host + "/donors/login");
   }
 
   if (userCredential) {
@@ -46,15 +50,8 @@ export async function GET(request: NextRequest) {
 
     cookies().set(options);
 
-    console.log("Origin: ", request.nextUrl.origin);
-    console.log("Host Header: ", request.headers.get("host"));
-
-    return NextResponse.redirect(
-      `${request.nextUrl.origin}/${lang}/donors/profile`
-    );
+    return NextResponse.redirect(`${host}/${lang}/donors/profile`);
   } else {
-    return NextResponse.redirect(
-      `${request.nextUrl.origin}/${lang}/donors/login`
-    );
+    return NextResponse.redirect(`${host}/${lang}/donors/login`);
   }
 }
