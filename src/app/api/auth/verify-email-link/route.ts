@@ -7,7 +7,6 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink,
 } from "firebase/auth";
-import { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -19,16 +18,11 @@ export async function GET(request: NextRequest) {
 
   // Replace origin in case the request is coming from a proxy
   const origin = getProxyOrigin(request);
-  const hostHeader = request.headers.get("host") || "localhost:3000";
-  const host = hostHeader.replace("www.", "");
+  const host = request.headers.get("host") || "localhost:3000";
   const newUrl = new URL(request.url);
   newUrl.hostname = host;
   newUrl.port = "";
   const url = newUrl.toString();
-
-  console.log("origin: ", origin);
-  console.log("host: ", host);
-  console.log("Modified request url: ", url);
 
   // Get email query parameters
   const email = request.nextUrl.searchParams.get("email");
@@ -57,7 +51,6 @@ export async function GET(request: NextRequest) {
       maxAge: expiresIn,
       httpOnly: true,
       secure: isDev ? false : true,
-      // domain: host,
     };
 
     cookies().set(options);

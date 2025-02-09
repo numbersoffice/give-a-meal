@@ -37,7 +37,11 @@ export default async function Layout({
               label: menu.donations,
               link: localeLink("/donors/profile/donations", lang),
             },
-            { label: menu.logout, link: `/api/auth/logout?lang=${lang}` },
+            {
+              label: menu.logout,
+              link: `/api/auth/logout?lang=${lang}`,
+              prefetch: false,
+            },
           ]}
         />
         <div>{children}</div>
