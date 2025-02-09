@@ -54,10 +54,8 @@ export async function GET(request: NextRequest) {
       name: "session",
       value: sessionCookie,
       maxAge: expiresIn,
-      httpOnly: true,
+      // httpOnly: true,
       // secure: isDev ? false : true,
-      secure: false,
-      sameSite: "none" as "none",
     };
 
     cookies().set(options);
