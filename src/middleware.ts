@@ -29,6 +29,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  console.log("MIDDLEWARE: Host header found", host);
+  console.log("MIDDLEWARE: request.url", request.url);
+  console.log("MIDDLEWARE: request.nextUrl.origin", request.nextUrl.origin);
+
   let currentPathname = request.nextUrl.pathname;
 
   // Skip: paths that should not have a locale
