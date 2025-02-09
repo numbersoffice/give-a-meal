@@ -6,6 +6,7 @@ import getProxyOrigin from "@/utils/getProxyOrigin";
 initAdminApp();
 
 export async function GET(request: NextRequest) {
+  console.log("Running logoue");
   const hostHeader = request.headers.get("host") || "localhost:3000";
   const host = hostHeader.replace("www.", "");
   const origin = getProxyOrigin(request);
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
   if (session) {
     try {
       const response = NextResponse.redirect(new URL(`/${lang}`, origin));
-      response.cookies.delete({ name: "session", domain: host });
+      // response.cookies.delete({ name: "session", domain: host });
       return response;
     } catch (error: any) {
       return new NextResponse(JSON.stringify({ error: error.message }), {
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
     }
   } else {
     const response = NextResponse.redirect(new URL(`/${lang}`, origin));
-    response.cookies.delete("session");
+    // response.cookies.delete("session");
     return response;
   }
 }
