@@ -43,9 +43,11 @@ export default async function Home({
       <Hero lang={lang} />
       <div className={styles.overlay}>
         <div className={styles.maxWidth}>
-          <div className="grid" style={{ padding: 0 }}>
-            {/* <Badge className={styles.badgePartnerMarquee} style={{ margin: "0 24px" }}>{partners.title}</Badge> */}
-            {/* <PartnerMarquee className={styles.partnerMarqueeContainer} /> */}
+          <div className="grid" style={{ paddingTop: 0 }}>
+            {/* <Badge className={styles.badgePartnerMarquee}>
+              {partners.title}
+            </Badge>
+            <PartnerMarquee className={styles.partnerMarqueeContainer} /> */}
           </div>
           <Why lang={lang} />
           <div className="grid">
