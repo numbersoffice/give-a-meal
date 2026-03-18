@@ -1,22 +1,23 @@
 import Navigation from "@/components/navigation";
 import { Locale, i18n } from "@/i18n-config";
-import Script from 'next/script';
+import Script from "next/script";
 import "../globals.css";
 import Toaster from "@/components/toaster";
 
 export async function generateStaticParams() {
-  return i18n.locales.map((locale) => ({ lang: locale }))
+  return i18n.locales.map((locale) => ({ lang: locale }));
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params,
 }: {
-  children: React.ReactNode
-  params: { lang: Locale }
+  children: React.ReactNode;
+  params: Promise<{ lang: Locale }>;
 }) {
+  const { lang } = await params;
   return (
-    <html lang={params.lang}>
+    <html lang={lang}>
       <Script id="google-tag-manager" defer={true}>
         {`
           (function(w,d,s,l,i){
@@ -31,13 +32,17 @@ export default function RootLayout({
       </Script>
       <body>
         <noscript>
-          <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5XJTLZGM" height="0" width="0" style={{ display: "none", visibility: "hidden" }}></iframe>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-5XJTLZGM"
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+          ></iframe>
         </noscript>
-        <Navigation lang={params.lang} />
+        <Navigation lang={lang} />
         <Toaster />
         <main>{children}</main>
       </body>
     </html>
   );
 }
-

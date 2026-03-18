@@ -41,7 +41,7 @@ export default async function getBusinessesByLocation(
   !isNaN(_maxLon) && params.append("maxlon", _maxLon.toString());
 
   const url =
-    "https://us-central1-give-a-meal-production.cloudfunctions.net/getBusinessesByLocation?" +
+    `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/public/businesses?` +
     params.toString();
 
   try {

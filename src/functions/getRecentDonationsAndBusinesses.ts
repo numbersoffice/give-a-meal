@@ -10,7 +10,8 @@ import timeSince from "@/utils/getTimeSince"
  */
 export default async function getRecentDonationsAndBusinesses(dictionary: any) {
     try {
-        const res = await fetch("https://us-central1-give-a-meal-production.cloudfunctions.net/getRecentDonationsAndBusinesses", { next: { revalidate: 60 } })
+        console.log(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/public/recent`)
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/public/recent`, { next: { revalidate: 60 } })
         const { donations, businesses } = await res.json()
 
         const combinedData: RecentData[] = [...donations, ...businesses]

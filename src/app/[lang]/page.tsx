@@ -14,13 +14,14 @@ import PartnerMarquee from "@/components/partnerMarquee";
 export async function generateMetadata({
   params,
 }: {
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }>;
 }): Promise<Metadata> {
+  const { lang } = await params;
   const {
     pages: {
       home: { meta },
     },
-  } = await getDictionary(params.lang);
+  } = await getDictionary(lang);
   return {
     title: meta.title,
     description: meta.description,
@@ -28,10 +29,11 @@ export async function generateMetadata({
 }
 
 export default async function Home({
-  params: { lang },
+  params,
 }: {
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }>;
 }) {
+  const { lang } = await params;
   const {
     pages: {
       home: { faq, howTo, partners },
