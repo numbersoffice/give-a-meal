@@ -4,9 +4,10 @@ import { ImageResponse } from "next/og";
 export default async function Image({
   params,
 }: {
-  params: Promise<{ lang: Locale }>;
+  params: Promise<{ lang: string }>;
 }) {
-  const { lang } = await params;
+  const { lang: langParam } = await params;
+  const lang = langParam as Locale;
   const options = { width: 830, height: 498 };
   const element = lang === "es" ? image_es : image_en;
 

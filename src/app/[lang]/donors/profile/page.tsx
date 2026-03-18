@@ -10,9 +10,10 @@ export default async function Page({
   params,
 }: {
   searchParams?: Promise<{ [key: string]: string | undefined }>;
-  params: Promise<{ lang: Locale }>;
+  params: Promise<{ lang: string }>;
 }) {
-  const { lang } = await params;
+  const { lang: langParam } = await params;
+  const lang = langParam as Locale;
   const {
     pages: {
       donors: {
