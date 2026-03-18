@@ -5,12 +5,13 @@ import { NextRequest, NextResponse } from "next/server";
 // editItem
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { itemId: string } }
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
     const authData = await verifyAuth(request);
     const { businessId, title, description } = await request.json();
-    const itemId = Number(params.itemId);
+    const { itemId: itemIdParam } = await params;
+    const itemId = Number(itemIdParam);
     await verifyBusinessMembership(authData, businessId, true);
 
     if (!itemId || isNaN(itemId))
@@ -35,12 +36,13 @@ export async function PUT(
 // archiveItem
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { itemId: string } }
+  { params }: { params: Promise<{ itemId: string }> }
 ) {
   try {
     const authData = await verifyAuth(request);
     const { businessId } = await request.json();
-    const itemId = Number(params.itemId);
+    const { itemId: itemIdParam } = await params;
+    const itemId = Number(itemIdParam);
     await verifyBusinessMembership(authData, businessId, true);
 
     if (!itemId || isNaN(itemId))

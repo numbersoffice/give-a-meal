@@ -5,10 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 // claimDonation
 export async function POST(
   request: NextRequest,
-  { params }: { params: { donationId: string } }
+  { params }: { params: Promise<{ donationId: string }> }
 ) {
   try {
-    const donationId = Number(params.donationId);
+    const { donationId: donationIdParam } = await params;
+    const donationId = Number(donationIdParam);
     const { storageId } = await request.json();
     let claimedDonations: any[] = [];
     const maxClaims = 3;

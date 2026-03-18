@@ -1,16 +1,21 @@
-import React from "react"
+import React from "react";
 import Link from "next/link";
-import styles from "@/styles/document.module.css"
-import { Metadata } from 'next'
+import styles from "@/styles/document.module.css";
+import { Metadata } from "next";
 import { Locale } from "@/i18n-config";
 import Footer from "@/components/footer";
 
 export const metadata: Metadata = {
   title: "Cookie Policy",
   description: "Our privacy notice.",
-}
+};
 
-export default function PrivacyNotice({ params: { lang } }: { params: { lang: Locale } }) {
+export default async function PrivacyNotice({
+  params,
+}: {
+  params: Promise<{ lang: Locale }>;
+}) {
+  const { lang } = await params;
   return (
     <>
       <div className="grid">
@@ -30,10 +35,10 @@ export default function PrivacyNotice({ params: { lang } }: { params: { lang: Lo
             our iOS or Android apps, or visit our website at{" "}
             <Link href="https://www.give-a-meal.org">
               https://www.give-a-meal.org
-            </Link>
-            {" "}(&quot;<b>Websites</b>&quot;). It explains what these technologies are
-            and why we use them, as well as your rights to control our use of
-            them.
+            </Link>{" "}
+            (&quot;<b>Websites</b>&quot;). It explains what these technologies
+            are and why we use them, as well as your rights to control our use
+            of them.
           </p>
           <p className="body">
             In some cases we may use cookies to collect personal information, or
@@ -51,17 +56,17 @@ export default function PrivacyNotice({ params: { lang } }: { params: { lang: Lo
             Cookies set by the website owner (in this case, Fotura, Inc.) are
             called &quot;first party cookies&quot;. Cookies set by parties other
             than the website owner are called &quot;third party cookies&quot;.
-            Third party cookies enable third party features or functionality to be
-            provided on or through the website (e.g. like advertising, interactive
-            content and analytics). The parties that set these third party cookies
-            can recognize your computer both when it visits the website in
-            question and also when it visits certain other websites.
+            Third party cookies enable third party features or functionality to
+            be provided on or through the website (e.g. like advertising,
+            interactive content and analytics). The parties that set these third
+            party cookies can recognize your computer both when it visits the
+            website in question and also when it visits certain other websites.
           </p>
           <h5>Why do we use cookies?</h5>
           <p className="body">
-            We use first and third party cookies for several reasons. Some cookies
-            are required for technical reasons in order for our Websites to
-            operate, and we refer to these as &quot;essential&quot; or
+            We use first and third party cookies for several reasons. Some
+            cookies are required for technical reasons in order for our Websites
+            to operate, and we refer to these as &quot;essential&quot; or
             &quot;strictly necessary&quot; cookies. Other cookies also enable us
             to track and target the interests of our users to enhance the
             experience on our Online Properties. Third parties serve cookies
@@ -69,34 +74,34 @@ export default function PrivacyNotice({ params: { lang } }: { params: { lang: Lo
             This is described in more detail below.
           </p>
           <p className="body">
-            The specific types of first and third party cookies served through our
-            Websites and the purposes they perform are described below (please
-            note that the specific cookies served may vary depending on the
-            specific Online Properties you visit):
+            The specific types of first and third party cookies served through
+            our Websites and the purposes they perform are described below
+            (please note that the specific cookies served may vary depending on
+            the specific Online Properties you visit):
           </p>
           <h5>How can I control cookies?</h5>
           <p className="body">
-            You have the right to decide whether to accept or reject cookies. You
-            can exercise your cookie rights by setting your preferences in the
-            Cookie Consent Manager. The Cookie Consent Manager allows you to
+            You have the right to decide whether to accept or reject cookies.
+            You can exercise your cookie rights by setting your preferences in
+            the Cookie Consent Manager. The Cookie Consent Manager allows you to
             select which categories of cookies you accept or reject. Essential
             cookies cannot be rejected as they are strictly necessary to provide
             you with services.
           </p>
           <p className="body">
-            The Cookie Consent Manager can be found in the notification banner and
-            on our website. If you choose to reject cookies, you may still use our
-            website though your access to some functionality and areas of our
-            website may be restricted. You may also set or amend your web browser
-            controls to accept or refuse cookies. As the means by which you can
-            refuse cookies through your web browser controls vary from
-            browser-to-browser, you should visit your browser&#39;s help menu for
-            more information.
+            The Cookie Consent Manager can be found in the notification banner
+            and on our website. If you choose to reject cookies, you may still
+            use our website though your access to some functionality and areas
+            of our website may be restricted. You may also set or amend your web
+            browser controls to accept or refuse cookies. As the means by which
+            you can refuse cookies through your web browser controls vary from
+            browser-to-browser, you should visit your browser&#39;s help menu
+            for more information.
           </p>
           <p className="body">
             In addition, most advertising networks offer you a way to opt out of
-            targeted advertising. If you would like to find out more information,
-            please visit
+            targeted advertising. If you would like to find out more
+            information, please visit
             <Link href="http://www.aboutads.info/choices/">
               http://www.aboutads.info/choices/
             </Link>{" "}
@@ -107,10 +112,10 @@ export default function PrivacyNotice({ params: { lang } }: { params: { lang: Lo
             .
           </p>
           <p className="body">
-            The specific types of first and third party cookies served through our
-            Websites and the purposes they perform are described in the table
-            below (please note that the specific cookies served may vary depending
-            on the specific Online Properties you visit):
+            The specific types of first and third party cookies served through
+            our Websites and the purposes they perform are described in the
+            table below (please note that the specific cookies served may vary
+            depending on the specific Online Properties you visit):
           </p>
           <h5>
             <b>
@@ -154,9 +159,9 @@ export default function PrivacyNotice({ params: { lang } }: { params: { lang: Lo
             </b>
           </h5>
           <p className="body">
-            These cookies are not strictly necessary to provide you with services
-            available through our Websites but provide secondary functionality
-            like analysing web traffic.
+            These cookies are not strictly necessary to provide you with
+            services available through our Websites but provide secondary
+            functionality like analysing web traffic.
           </p>
           <div className={styles.tableScroll}>
             <table>
@@ -181,20 +186,24 @@ export default function PrivacyNotice({ params: { lang } }: { params: { lang: Lo
                   <td>HTTP cookie</td>
                   <td>2 years</td>
                 </tr>
-                <tr><td>_gid</td>
+                <tr>
+                  <td>_gid</td>
                   <td>Used to distinguish users.</td>
                   <td>Google</td>
                   <td>Google Analytics</td>
                   <td>USA</td>
                   <td>HTTP cookie</td>
-                  <td>24 hours</td></tr>
-                <tr><td>_ga_[container-id]</td>
+                  <td>24 hours</td>
+                </tr>
+                <tr>
+                  <td>_ga_[container-id]</td>
                   <td>Used to persist session state.</td>
                   <td>Google</td>
                   <td>Google Analytics</td>
                   <td>USA</td>
                   <td>HTTP cookie</td>
-                  <td>2 years</td></tr>
+                  <td>2 years</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -204,20 +213,22 @@ export default function PrivacyNotice({ params: { lang } }: { params: { lang: Lo
             Cookies are not the only way to recognize or track visitors to a
             website. We may use other, similar technologies from time to time,
             like web beacons (sometimes called &quot;tracking pixels&quot; or
-            &quot;clear gifs&quot;). These are tiny graphics files that contain a
-            unique identifier that enable us to recognize when someone has visited
-            our Websites or opened an e-mail including them. This allows us, for
-            example, to monitor the traffic patterns of users from one page within
-            a website to another, to deliver or communicate with cookies, to
-            understand whether you have come to the website from an online
-            advertisement displayed on a third-party website, to improve site
-            performance, and to measure the success of e-mail marketing campaigns.
-            In many instances, these technologies are reliant on cookies to
-            function properly, and so declining cookies will impair their
-            functioning.
+            &quot;clear gifs&quot;). These are tiny graphics files that contain
+            a unique identifier that enable us to recognize when someone has
+            visited our Websites or opened an e-mail including them. This allows
+            us, for example, to monitor the traffic patterns of users from one
+            page within a website to another, to deliver or communicate with
+            cookies, to understand whether you have come to the website from an
+            online advertisement displayed on a third-party website, to improve
+            site performance, and to measure the success of e-mail marketing
+            campaigns. In many instances, these technologies are reliant on
+            cookies to function properly, and so declining cookies will impair
+            their functioning.
           </p>
           <h5>Do you use Flash cookies or Local Shared Objects?</h5>
-          <p className="body">No, we do not use Flash cookies or Local Shared Objects.</p>
+          <p className="body">
+            No, we do not use Flash cookies or Local Shared Objects.
+          </p>
           <h5>Do you serve targeted advertising?</h5>
           <p className="body">No, we do not serve targeted advertising.</p>
           <h5>How often will you update this Cookie Policy?</h5>
@@ -225,8 +236,8 @@ export default function PrivacyNotice({ params: { lang } }: { params: { lang: Lo
             We may update this Cookie Policy from time to time in order to
             reflect, for example, changes to the cookies we use or for other
             operational, legal or regulatory reasons. Please therefore re-visit
-            this Cookie Policy regularly to stay informed about our use of cookies
-            and related technologies.
+            this Cookie Policy regularly to stay informed about our use of
+            cookies and related technologies.
           </p>
           <p className="body">
             The date at the top of this Cookie Policy indicates when it was last
@@ -247,7 +258,6 @@ export default function PrivacyNotice({ params: { lang } }: { params: { lang: Lo
             <br />
             United States
           </p>
-
         </div>
       </div>
       <Footer lang={lang} />

@@ -1,30 +1,44 @@
-import Header from '@/components/header';
-import styles from './page.module.css';
-import Badge from '@/components/badge';
-import InfoCards from '@/components/infoCards';
-import FAQ from '@/components/faq';
-import { Metadata } from 'next'
-import { getDictionary } from '@/get-dictionary-server';
-import { Locale } from '@/i18n-config';
-import Footer from '@/components/footer';
-import NearbyRestaurants from '@/components/nearbyRestaurants';
-import DonationCard from '@/components/donationCard';
+import Header from "@/components/header";
+import styles from "./page.module.css";
+import Badge from "@/components/badge";
+import InfoCards from "@/components/infoCards";
+import FAQ from "@/components/faq";
+import { Metadata } from "next";
+import { getDictionary } from "@/get-dictionary-server";
+import { Locale } from "@/i18n-config";
+import Footer from "@/components/footer";
+import NearbyRestaurants from "@/components/nearbyRestaurants";
+import DonationCard from "@/components/donationCard";
 
-export async function generateMetadata(
-  { params }: { params: { lang: Locale } }
-): Promise<Metadata> {
-
-  const { pages: { giveAMeal: { meta } } } = await getDictionary(params.lang)
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: Locale }>;
+}): Promise<Metadata> {
+  const { lang } = await params;
+  const {
+    pages: {
+      giveAMeal: { meta },
+    },
+  } = await getDictionary(lang);
 
   return {
     title: meta.title,
     description: meta.description,
-  }
+  };
 }
 
-export default async function Page({ params: { lang } }: { params: { lang: Locale } }) {
-
-  const { pages: { giveAMeal: { hero, howTo, faq, map, donate } } } = await getDictionary(lang)
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ lang: Locale }>;
+}) {
+  const { lang } = await params;
+  const {
+    pages: {
+      giveAMeal: { hero, howTo, faq, map, donate },
+    },
+  } = await getDictionary(lang);
 
   return (
     <>
@@ -42,5 +56,5 @@ export default async function Page({ params: { lang } }: { params: { lang: Local
       </div>
       <Footer lang={lang} />
     </>
-  )
+  );
 }

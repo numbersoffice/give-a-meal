@@ -39,7 +39,7 @@ export default function MagicLinkLoginForm({ title,
 
     useEffect(() => {
         getDictionary(lang).then((res) => setDict(res))
-    }, [])
+    }, [lang])
 
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();

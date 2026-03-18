@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 import { verifySessionCookie } from "@/utils/server/verifySessionCookie";
 
 export async function updateProfileName(formData: FormData) {
-  const session = cookies().get("session");
+  const session = (await cookies()).get("session");
 
   if (!session) throw new Error("Not authorized");
 

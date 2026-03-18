@@ -8,11 +8,12 @@ import { headers } from "next/headers";
 
 export default async function Layout({
   children,
-  params: { lang },
+  params,
 }: {
   children: React.ReactNode;
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }>;
 }) {
+  const { lang } = await params;
   const {
     pages: {
       donors: {

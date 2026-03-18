@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const host = hostHeader.replace("www.", "");
   const origin = getProxyOrigin(request);
 
-  const session = cookies().get("session");
+  const session = (await cookies()).get("session");
   const lang = request.nextUrl.searchParams.get("lang");
 
   if (session) {

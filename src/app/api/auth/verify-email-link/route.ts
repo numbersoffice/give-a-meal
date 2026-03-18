@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       secure: isDev ? false : true,
     };
 
-    cookies().set(options);
+    (await cookies()).set(options);
 
     return NextResponse.redirect(`${origin}/${lang}/donors/profile`);
   } else {

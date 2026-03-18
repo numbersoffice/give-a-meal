@@ -9,16 +9,17 @@ export default async function Page({
   searchParams,
   params,
 }: {
-  searchParams?: { [key: string]: string | undefined };
-  params: { lang: Locale };
+  searchParams?: Promise<{ [key: string]: string | undefined }>;
+  params: Promise<{ lang: Locale }>;
 }) {
+  const { lang } = await params;
   const {
     pages: {
       donors: {
         layout: { menu },
       },
     },
-  } = await getDictionary(params.lang);
+  } = await getDictionary(lang);
 
   return (
     <>
@@ -32,15 +33,15 @@ export default async function Page({
           menuItems={[
             {
               label: menu.profile,
-              link: localeLink("/donors/profile/general", params.lang),
+              link: localeLink("/donors/profile/general", lang),
             },
             {
               label: menu.donations,
-              link: localeLink("/donors/profile/donations", params.lang),
+              link: localeLink("/donors/profile/donations", lang),
             },
             {
               label: menu.logout,
-              link: `/api/auth/logout?lang=${params.lang}`,
+              link: `/api/auth/logout?lang=${lang}`,
               prefetch: false,
             },
           ]}

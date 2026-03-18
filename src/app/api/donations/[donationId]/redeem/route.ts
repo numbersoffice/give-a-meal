@@ -7,11 +7,12 @@ import { NextRequest, NextResponse } from "next/server";
 // redeemDonation
 export async function POST(
   request: NextRequest,
-  { params }: { params: { donationId: string } }
+  { params }: { params: Promise<{ donationId: string }> }
 ) {
   try {
     const authData = await verifyAuth(request);
-    const donationId = Number(params.donationId);
+    const { donationId: donationIdParam } = await params;
+    const donationId = Number(donationIdParam);
     const { businessId } = await request.json();
     const connectionData = await verifyBusinessMembership(authData, businessId);
 

@@ -30,8 +30,8 @@ export default function Map({ initialPosition, className }: { initialPosition: {
 
     // Initialize map
     useEffect(() => {
-        initMap(mapRef, initialPosition).then(setMap)
-    }, [])
+        initMap(mapRef as any, initialPosition).then(setMap)
+    }, [initialPosition])
 
     // Initialize markers
     useEffect(() => {
@@ -40,7 +40,7 @@ export default function Map({ initialPosition, className }: { initialPosition: {
             // !selectedBusiness && setSelectedBusiness({ business: businesses[0], index: 0 })
             initMarkers(map, businesses, markers, setSelectedBusiness, selectedBusiness).then(setMarkers)
         }
-    }, [map, businesses])
+    }, [map, businesses, markers, setSelectedBusiness, selectedBusiness])
 
 
     // ----------------------------------
@@ -53,7 +53,7 @@ export default function Map({ initialPosition, className }: { initialPosition: {
         if (clientLocation && map) {
             goToMarker(clientLocation.lat, clientLocation.lon, map);
         }
-    }, [clientLocation]);
+    }, [clientLocation, map]);
 
     // Address field
     // Center map when address field is updated
@@ -61,7 +61,7 @@ export default function Map({ initialPosition, className }: { initialPosition: {
         if (addressFieldLocation && map) {
             goToMarker(addressFieldLocation.lat, addressFieldLocation.lon, map);
         }
-    }, [addressFieldLocation]);
+    }, [addressFieldLocation, map]);
 
 
     // ---------
@@ -78,7 +78,7 @@ export default function Map({ initialPosition, className }: { initialPosition: {
                 setBounds(bounds)
             })
         }
-    }, [map])
+    }, [map, setBounds])
 
 
     // ---------
@@ -90,7 +90,7 @@ export default function Map({ initialPosition, className }: { initialPosition: {
         if (selectedBusiness && map && businesses) {
             initMarkers(map, businesses, markers, setSelectedBusiness, selectedBusiness).then(setMarkers)
         }
-    }, [selectedBusiness])
+    }, [businesses, map, markers, selectedBusiness, setSelectedBusiness])
 
     // Update z-index of markers when selected business changes
     useEffect(() => {

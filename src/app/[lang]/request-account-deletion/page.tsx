@@ -1,15 +1,20 @@
-import React from "react"
-import styles from "@/styles/document.module.css"
-import { Metadata } from 'next'
+import React from "react";
+import styles from "@/styles/document.module.css";
+import { Metadata } from "next";
 import Footer from "@/components/footer";
 import { Locale } from "@/i18n-config";
 
 export const metadata: Metadata = {
   title: "Account deletion",
   description: "Contact us to request deletion of your account.",
-}
+};
 
-export default function Page({ params: { lang } }: { params: { lang: Locale } }) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ lang: Locale }>;
+}) {
+  const { lang } = await params;
   return (
     <>
       <div className={`grid ${styles.wrapper}`}>
@@ -22,14 +27,14 @@ export default function Page({ params: { lang } }: { params: { lang: Locale } })
           <div className={styles.spacer} />
 
           <p className="body">
-            When you delete your account we will retain some data about donations
-            you have redeemed and/or submitted.
+            When you delete your account we will retain some data about
+            donations you have redeemed and/or submitted.
           </p>
           <br />
           <p className="body">
-            Please contact <b>max@give-a-meal.org</b> to request an account deletion.
+            Please contact <b>max@give-a-meal.org</b> to request an account
+            deletion.
           </p>
-
         </div>
       </div>
       <Footer lang={lang} />

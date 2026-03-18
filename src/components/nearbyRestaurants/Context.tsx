@@ -50,7 +50,7 @@ export function NearbyRestaurantsProvider({ children }: { children: any }) {
                 setLoading(false);
             });
         }
-    }, [bounds]);
+    }, [bounds ,pos.lat, pos.lon]);
 
     const value = {
         businesses,
