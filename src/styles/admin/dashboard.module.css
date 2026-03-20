@@ -1,0 +1,39 @@
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--admin-spacing-xl);
+}
+
+.greeting {
+  margin-bottom: var(--admin-spacing-xl);
+}
+
+.title {
+  font-family: var(--admin-font-display);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--admin-text);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--admin-text-secondary);
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: var(--admin-spacing-lg) var(--admin-spacing-md);
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

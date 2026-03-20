@@ -8,6 +8,7 @@ import getProxyOrigin from "./utils/getProxyOrigin";
 const pathsWithoutLocale = [
   "/_next/",
   "/api/",
+  "/admin",
   "/apple-app-site-association",
   "/favicon.ico",
   "/sitemap.xml",
@@ -32,6 +33,10 @@ export async function middleware(request: NextRequest) {
   );
 
   if (shouldExclude) {
+    // Admin routes: server-side auth check
+    if (currentPathname.startsWith("/admin") && !currentPathname.startsWith("/admin/auth")) {
+      return handleAdminAuth(request, origin);
+    }
     return NextResponse.next();
   }
 
@@ -134,6 +139,27 @@ function getLocale(request: NextRequest): string | undefined {
   const locale = matchLocale(languages, locales, i18n.defaultLocale);
 
   return locale;
+}
+
+/**
+ * Verifies admin session cookie and redirects to /admin/auth if not authenticated
+ */
+async function handleAdminAuth(
+  request: NextRequest,
+  origin: string
+): Promise<NextResponse> {
+  try {
+    const cookie = request.headers.get("cookie") || "";
+    const response = await fetch(`${origin}/api/admin/auth/verify`, {
+      headers: { cookie },
+    });
+
+    if (response.ok) {
+      return NextResponse.next();
+    }
+  } catch {}
+
+  return NextResponse.redirect(new URL("/admin/auth", origin));
 }
 
 /**

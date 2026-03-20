@@ -1,0 +1,12 @@
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: var(--admin-spacing-xl);
+  animation: adminFadeIn 0.4s ease both;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: var(--admin-spacing-lg) var(--admin-spacing-md);
+  }
+}

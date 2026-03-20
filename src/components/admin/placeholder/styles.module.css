@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  height: 30vh;
+  width: 100%;
+  color: var(--admin-text-secondary);
+  justify-content: center;
+  align-items: center;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+}
+.container h2 {
+  font-family: var(--admin-font-body);
+  font-size: 15px;
+  font-weight: 500;
+}

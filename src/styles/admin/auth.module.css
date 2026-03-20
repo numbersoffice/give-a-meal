@@ -1,0 +1,64 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--admin-spacing-lg);
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  animation: adminFadeIn 0.5s ease both;
+}
+
+.header {
+  margin-bottom: var(--admin-spacing-xl);
+}
+
+.brand {
+  font-family: var(--admin-font-display);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--admin-text);
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  color: var(--admin-text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--admin-text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.submit {
+  margin-top: 8px;
+  width: 100%;
+  padding: 14px;
+  font-weight: 600;
+}
+
+.error {
+  font-size: 13px;
+  color: var(--admin-danger);
+  margin-top: 4px;
+}

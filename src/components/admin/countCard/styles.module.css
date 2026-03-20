@@ -1,0 +1,72 @@
+.card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  padding: var(--admin-spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  animation: adminFadeIn 0.4s ease both;
+}
+
+.card:nth-child(1) { animation-delay: 0ms; }
+.card:nth-child(2) { animation-delay: 50ms; }
+.card:nth-child(3) { animation-delay: 100ms; }
+.card:nth-child(4) { animation-delay: 150ms; }
+.card:nth-child(5) { animation-delay: 200ms; }
+
+.clickable {
+  cursor: pointer;
+}
+.clickable:hover {
+  border-color: rgba(0, 0, 0, 0.3);
+  box-shadow: var(--admin-shadow);
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--admin-text-secondary);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.count {
+  font-family: var(--admin-font-display);
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--admin-text);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-top: 8px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--admin-accent);
+  font-weight: 500;
+}
+
+.arrow {
+  transition: transform 0.2s;
+  display: inline-block;
+}
+.clickable:hover .arrow {
+  transform: translateX(3px);
+}
+
+/* Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, var(--admin-surface) 25%, var(--admin-surface-hover) 50%, var(--admin-surface) 75%);
+  background-size: 600px 100%;
+  animation: adminShimmer 1.8s infinite linear;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  padding: var(--admin-spacing-lg);
+  height: 130px;
+}

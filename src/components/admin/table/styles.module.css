@@ -1,0 +1,41 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.table thead {
+  border-bottom: 1px solid var(--admin-border);
+}
+.table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--admin-text-secondary);
+}
+.table td {
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.table tbody .hover:hover {
+  background: var(--admin-surface-hover);
+  cursor: pointer;
+}
+
+.tableRowLoading {
+  background: linear-gradient(90deg, var(--admin-bg) 25%, var(--admin-surface-hover) 50%, var(--admin-bg) 75%);
+  background-size: 600px 100%;
+  animation: adminShimmer 1.8s infinite linear;
+}
+.tableRowLoading td {
+  border: none;
+  height: 20vh;
+}
