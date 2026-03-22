@@ -1,22 +1,37 @@
 import timeSince from "@/utils/getTimeSince";
+import { getPayload } from "payload";
+import config from "@payload-config";
 
 /**
- * Fetches recent donations and businesses from API
+ * Fetches recent donations and businesses from Payload
  * Combines donations and businesses into one array
  * Sorts by most recent
  * Transforms each object for use in RecentItem component
- * Limits to 4 results
+ * Limits to 6 results
  * @param dictionary
  */
 export default async function getRecentDonationsAndBusinesses(dictionary: any) {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/custom/public/recent`,
-      { next: { revalidate: 60 } },
-    );
-    const { donations, businesses } = await res.json();
+    const payload = await getPayload({ config });
 
-    const combinedData: RecentData[] = [...donations, ...businesses]
+    const [donationsRes, businessesRes] = await Promise.all([
+      payload.find({
+        collection: "donations",
+        sort: "-createdAt",
+        limit: 5,
+        depth: 2,
+      }),
+      payload.find({
+        collection: "businesses",
+        sort: "-createdAt",
+        limit: 5,
+      }),
+    ]);
+
+    const combinedData: RecentData[] = [
+      ...donationsRes.docs,
+      ...businessesRes.docs,
+    ]
       .sort(
         (a: any, b: any) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
