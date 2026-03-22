@@ -1,22 +1,23 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { supabaseService } from "./supabase";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { verifySessionCookie } from "@/utils/server/verifySessionCookie";
+import { headers } from "next/headers";
+import { getPayload } from "payload";
+import config from "@payload-config";
 
 export async function updateProfileName(formData: FormData) {
-  const session = (await cookies()).get("session");
+  const payload = await getPayload({ config });
 
-  if (!session) throw new Error("Not authorized");
+  // Verify the donor's identity from the JWT cookie
+  const hdrs = await headers();
+  const result = await payload.auth({ headers: hdrs });
 
-  const token = await verifySessionCookie(session.value);
-  if (!token) throw new Error("Not authorized");
+  if (!result.user) throw new Error("Not authorized");
 
   const rawFormData = {
     name: formData.get("profileName"),
-    authId: token.uid,
+    donorId: result.user.id,
     lang: formData.get("lang"),
     formName: formData.get("formName"),
   };
@@ -25,21 +26,17 @@ export async function updateProfileName(formData: FormData) {
   if (
     typeof rawFormData.name !== "string" ||
     rawFormData.name.length > 24 ||
-    typeof rawFormData.authId !== "string" ||
     !rawFormData.lang ||
     !rawFormData.formName
   ) {
     throw new Error("Invalid form data");
   }
 
-  const res = await supabaseService
-    .from("profiles")
-    .update({ first_name: rawFormData.name })
-    .eq("auth_id", rawFormData.authId);
-
-  if (res.error) {
-    throw new Error("Error updating profile name");
-  }
+  await payload.update({
+    collection: "donors",
+    id: rawFormData.donorId,
+    data: { firstName: rawFormData.name },
+  });
 
   revalidatePath(`/[lang]/donors/profile`, "layout");
   revalidatePath(`/[lang]`);

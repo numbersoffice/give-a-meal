@@ -41,13 +41,14 @@ export default async function getBusinessesByLocation(
   !isNaN(_maxLon) && params.append("maxlon", _maxLon.toString());
 
   const url =
-    `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/public/businesses?` +
+    `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/custom/public/businesses?` +
     params.toString();
 
   try {
     // Get businesses from API
     const res = await fetch(url);
     const data = await res.json();
+    console.log(data)
     return data;
   } catch (err) {
     console.log(err);

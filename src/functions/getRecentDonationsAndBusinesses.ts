@@ -11,7 +11,7 @@ import timeSince from "@/utils/getTimeSince";
 export default async function getRecentDonationsAndBusinesses(dictionary: any) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/public/recent`,
+      `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/custom/public/recent`,
       { next: { revalidate: 60 } },
     );
     const { donations, businesses } = await res.json();
@@ -19,37 +19,37 @@ export default async function getRecentDonationsAndBusinesses(dictionary: any) {
     const combinedData: RecentData[] = [...donations, ...businesses]
       .sort(
         (a: any, b: any) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       )
       .slice(0, 6)
       .map((data: any) => {
-        if ("place_id" in data) {
+        if ("placeId" in data) {
           return {
             action: "newBusiness",
-            businessName: data.business_name
-              ? data.business_name.charAt(0).toUpperCase() +
-                data.business_name.slice(1)
+            businessName: data.businessName
+              ? data.businessName.charAt(0).toUpperCase() +
+                data.businessName.slice(1)
               : "",
-            time: timeSince(data.created_at, dictionary),
+            time: timeSince(data.createdAt, dictionary),
             donorName: "",
             item: "",
             id: data.id + "_business",
           };
         } else {
+          const businessName = data.business?.businessName ?? "";
+          const donorName = data.donatedBy?.firstName ?? data.donorName ?? "";
+          const itemTitle = data.item?.title ?? "";
           return {
             action: "newDonation",
-            businessName: data.business_id.business_name
-              ? data.business_id.business_name.charAt(0).toUpperCase() +
-                data.business_id.business_name.slice(1)
+            businessName: businessName
+              ? businessName.charAt(0).toUpperCase() + businessName.slice(1)
               : "",
-            time: timeSince(data.created_at, dictionary),
-            donorName: data.donor_name
-              ? data.donor_name.charAt(0).toUpperCase() +
-                data.donor_name.slice(1)
+            time: timeSince(data.createdAt, dictionary),
+            donorName: donorName
+              ? donorName.charAt(0).toUpperCase() + donorName.slice(1)
               : "",
-            item: data.item_id.title
-              ? data.item_id.title.charAt(0).toUpperCase() +
-                data.item_id.title.slice(1)
+            item: itemTitle
+              ? itemTitle.charAt(0).toUpperCase() + itemTitle.slice(1)
               : "",
             id: data.id + "_donation",
           };

@@ -5,6 +5,11 @@ import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import getProxyOrigin from "./utils/getProxyOrigin";
 
+/**
+ * This middleware is only responsible for the frontend and the donor portal
+ * It is does NOT touch the API and it's authentication logic
+ */
+
 const pathsWithoutLocale = [
   "/_next/",
   "/api/",
@@ -33,10 +38,6 @@ export async function middleware(request: NextRequest) {
   );
 
   if (shouldExclude) {
-    // Admin routes: server-side auth check
-    if (currentPathname.startsWith("/admin") && !currentPathname.startsWith("/admin/auth")) {
-      return handleAdminAuth(request, origin);
-    }
     return NextResponse.next();
   }
 
@@ -58,14 +59,13 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     } else {
       const slug = currentPathname + request.nextUrl.search;
-      console.log("host: ", origin);
       const url = new URL(slug, origin);
       return NextResponse.redirect(url);
     }
   }
 
   // Authentication:
-  // 1) Return pathname unchanged if no autnetication is needed
+  // 1) Return pathname unchanged if no authentication is needed
   // 2) Return data with user info if authenticated
   // 3) Return pathname to login url if not authenticated
   const result = await handleAuthentication(request, currentPathname);
@@ -78,7 +78,7 @@ export async function middleware(request: NextRequest) {
 
   // Add user data to the query parameters
   if (result.data) {
-    !params.get("uid") && params.append("uid", result.data.uid);
+    !params.get("id") && params.append("id", result.data.id);
     !params.get("email") && params.append("email", result.data.email);
   }
 
@@ -103,7 +103,7 @@ export async function middleware(request: NextRequest) {
 
 type AuthResult = {
   pathname: string;
-  data: null | { uid: string; email: string };
+  data: null | { id: string; email: string };
 };
 
 // Adjusted routing logic to only determine the target pathname
@@ -142,32 +142,10 @@ function getLocale(request: NextRequest): string | undefined {
 }
 
 /**
- * Verifies admin session cookie and redirects to /admin/auth if not authenticated
- */
-async function handleAdminAuth(
-  request: NextRequest,
-  origin: string
-): Promise<NextResponse> {
-  try {
-    const cookie = request.headers.get("cookie") || "";
-    const response = await fetch(`${origin}/api/admin/auth/verify`, {
-      headers: { cookie },
-    });
-
-    if (response.ok) {
-      return NextResponse.next();
-    }
-  } catch {}
-
-  return NextResponse.redirect(new URL("/admin/auth", origin));
-}
-
-/**
- * Verifies a firebase ID token
+ * Verifies a Payload JWT token via the verify-id-token API route
  * @param request
  * @param pathname The desired pathname (if different from the request)
- * @param protectedPaths The paths that require authentication
- * @returns The user's email and uid or null
+ * @returns The user's email and id or null
  */
 async function handleAuthentication(
   request: NextRequest,
@@ -175,26 +153,26 @@ async function handleAuthentication(
 ): Promise<AuthResult> {
   const origin = getProxyOrigin(request);
 
-  let authResulst: AuthResult = {
+  let authResult: AuthResult = {
     pathname: pathname,
     data: null,
   };
 
-  // Verify ID token
+  // Verify token via API route
   try {
     const cookie = request.headers.get("cookie") || "";
-    let response = await fetch(`${origin}/api/auth/verify-id-token`, {
+    let response = await fetch(`${origin}/api/custom/auth/verify-id-token`, {
       headers: { cookie },
     });
 
     // Return user data
     if (response.ok) {
       const res = await response.json();
-      authResulst.data = { email: res.email, uid: res.uid };
+      authResult.data = { email: res.email, id: res.id };
     } else {
       // Redirect to login if not authenticated
-      authResulst.pathname = "donors/login";
+      authResult.pathname = "donors/login";
     }
   } catch (err) {}
-  return authResulst;
+  return authResult;
 }

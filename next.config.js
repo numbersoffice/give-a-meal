@@ -1,3 +1,5 @@
+import { withPayload } from "@payloadcms/next/withPayload";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // experimental: { serverActions: true },
@@ -11,4 +13,4 @@ const nextConfig = {
   output: "standalone",
 };
 
-export default nextConfig;
+export default withPayload(nextConfig);

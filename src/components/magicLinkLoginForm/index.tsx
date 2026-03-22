@@ -4,9 +4,7 @@ import Link from "next/link";
 import Button from "../button";
 import TextInput from "../textInput";
 import s from "./styles.module.css"
-import { useEffect, useMemo, useState } from "react";
-import { auth } from "@/lib/firebase";
-import { sendSignInLinkToEmail } from "firebase/auth";
+import { useEffect, useState } from "react";
 import { Locale } from "@/i18n-config";
 import { getDictionary } from "@/get-dictionary-client";
 import fillTemplate from "@/utils/fillTemplate";
@@ -41,28 +39,28 @@ export default function MagicLinkLoginForm({ title,
         getDictionary(lang).then((res) => setDict(res))
     }, [lang])
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
 
         const email = (e.target as HTMLFormElement).email.value;
 
-        const link = window.location.origin + "/api/auth/verify-email-link?email=" + email + "&user-lang=" + lang;
-        const actionCodeSettings = {
-            url: link,
-            handleCodeInApp: true
-        };
+        try {
+            const res = await fetch("/api/donors/magic-link/request", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, lang }),
+            });
 
-        sendSignInLinkToEmail(auth, email, actionCodeSettings)
-            .then(() => {
-                setLoading(false);
+            if (res.ok) {
                 setEmail(email);
                 setSuccess(true);
-            })
-            .catch((error) => {
-                console.log(error.message)
-                setLoading(false);
-            });
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     if (success) return (

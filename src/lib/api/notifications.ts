@@ -1,65 +1,71 @@
 import { Expo, ExpoPushMessage } from "expo-server-sdk";
-import { supabaseService } from "@/lib/supabase";
+import { getPayload } from "payload";
+import config from "@payload-config";
 
 export type NotificationTypes = "donation_added" | "donation_removed" | "team_request";
 
 export async function sendNotifications(
-  businessId: number,
+  businessId: number | string,
   type: NotificationTypes,
-  callerUserId?: number
+  callerUserId?: number | string
 ) {
   if (!businessId || !type) return;
 
+  const payload = await getPayload({ config });
   const expo = new Expo();
 
-  const teamRes = await supabaseService
-    .from("profiles")
-    .select("*, business_connections!inner(*)")
-    .eq("business_connections.business", businessId)
-    .not("push_token", "is", null);
-
-  if (teamRes.error) return;
+  const { docs: teamMembers } = await payload.find({
+    collection: "businessUsers",
+    where: {
+      or: [
+        { ownedBusinesses: { in: [businessId] } },
+        { staffBusinesses: { in: [businessId] } },
+      ],
+      pushToken: { exists: true },
+    },
+    limit: 100,
+  });
 
   const messages: ExpoPushMessage[] = [];
 
-  switch (type) {
-    case "donation_added":
-      for (const profile of teamRes.data) {
-        if (!profile.push_token) continue;
-        if (profile.id === callerUserId) continue;
-        if (!Expo.isExpoPushToken(profile.push_token)) continue;
+  for (const member of teamMembers) {
+    if (!member.pushToken) continue;
+    if (String(member.id) === String(callerUserId)) continue;
+    if (!Expo.isExpoPushToken(member.pushToken)) continue;
+
+    const ownedIds = ((member.ownedBusinesses as any[]) ?? []).map((b: any) =>
+      typeof b === "object" ? String(b.id) : String(b)
+    );
+    const isOwner = ownedIds.includes(String(businessId));
+
+    switch (type) {
+      case "donation_added":
         messages.push({
-          to: profile.push_token,
+          to: member.pushToken,
           title: "Donation added 🎉",
           body: "Someone just donated a meal!",
         });
-      }
-      break;
-    case "donation_removed":
-      for (const profile of teamRes.data) {
-        if (!profile.push_token) continue;
-        if (profile.id === callerUserId) continue;
-        if (!Expo.isExpoPushToken(profile.push_token)) continue;
+        break;
+      case "donation_removed":
         messages.push({
-          to: profile.push_token,
+          to: member.pushToken,
           title: "Donation collected 🥪",
           body: "Someone just picked up a meal!",
         });
-      }
-      break;
-    case "team_request":
-      for (const profile of teamRes.data) {
-        if (!profile.push_token) continue;
-        if (profile.business_connections[0].connection_type !== "admin") continue;
-        if (!Expo.isExpoPushToken(profile.push_token)) continue;
-        messages.push({
-          to: profile.push_token,
-          title: "Team request",
-          body: "Someone wants to join your team!",
-        });
-      }
-      break;
+        break;
+      case "team_request":
+        if (isOwner) {
+          messages.push({
+            to: member.pushToken,
+            title: "Team request",
+            body: "Someone wants to join your team!",
+          });
+        }
+        break;
+    }
   }
 
-  expo.sendPushNotificationsAsync(messages);
+  if (messages.length > 0) {
+    expo.sendPushNotificationsAsync(messages);
+  }
 }

@@ -1,9 +1,6 @@
-import { initAdminApp } from "@/lib/firebaseAdmin";
-import { supabaseService } from "@/lib/supabase";
-import { auth } from "firebase-admin";
+import { getPayload } from "payload";
+import config from "@payload-config";
 import { NextRequest, NextResponse } from "next/server";
-
-initAdminApp();
 
 export type AuthData = {
   uid: string;
@@ -12,41 +9,64 @@ export type AuthData = {
 };
 
 export async function verifyAuth(request: NextRequest): Promise<AuthData> {
-  const authHeader = request.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    throw new ApiError(401, "User needs to be authenticated.");
+  const payload = await getPayload({ config });
+
+  const headers = request.headers;
+  const result = await payload.auth({ headers });
+
+  if (result.user) {
+    return { uid: result.user.id, email: result.user.email };
+  } else {
+    throw new ApiError(401, "Invalid token.");
   }
-  const token = authHeader.slice(7);
-  const decodedToken = await auth().verifyIdToken(token);
-  return { uid: decodedToken.uid, email: decodedToken.email || "" };
 }
 
 export async function verifyBusinessMembership(
   authData: AuthData,
-  businessId: number,
-  adminOnly = false
-): Promise<any> {
-  if (!businessId || typeof businessId !== "number") {
-    throw new ApiError(400, "Business ID of type number is required.");
+  businessId: number | string,
+  adminOnly = false,
+): Promise<{ user: any; role: "owner" | "staff" }> {
+  if (!businessId) {
+    throw new ApiError(400, "Business ID is required.");
   }
 
-  const connectionRes: any = await supabaseService
-    .from("business_connections")
-    .select("*, business!inner(*), profile!inner(*)")
-    .eq("business.id", businessId)
-    .eq("profile.auth_id", authData.uid)
-    .limit(1)
-    .single();
+  const payload = await getPayload({ config });
 
-  if (!connectionRes || connectionRes.error || !connectionRes.data) {
+  const { docs } = await payload.find({
+    collection: "businessUsers",
+    where: {
+      email: { equals: authData.email },
+      or: [
+        { ownedBusinesses: { in: [businessId] } },
+        { staffBusinesses: { in: [businessId] } },
+      ],
+    },
+    limit: 1,
+  });
+
+  if (docs.length === 0) {
     throw new ApiError(403, "User does not belong to the specified business.");
   }
 
-  if (adminOnly && connectionRes.data.connection_type !== "admin") {
-    throw new ApiError(403, "This operation can only be performed by an admin.");
+  const user = docs[0];
+  const ownedIds = ((user.ownedBusinesses as any[]) ?? []).map((b: any) =>
+    typeof b === "object" ? b.id : b,
+  );
+  const role =
+    ownedIds.includes(
+      typeof businessId === "string" ? businessId : String(businessId),
+    ) || ownedIds.includes(businessId)
+      ? "owner"
+      : "staff";
+
+  if (adminOnly && role !== "owner") {
+    throw new ApiError(
+      403,
+      "This operation can only be performed by an admin.",
+    );
   }
 
-  return connectionRes.data;
+  return { user, role };
 }
 
 export class ApiError extends Error {
@@ -59,8 +79,12 @@ export class ApiError extends Error {
 
 export function errorResponse(error: unknown) {
   if (error instanceof ApiError) {
-    return NextResponse.json({ error: error.message }, { status: error.status });
+    return NextResponse.json(
+      { error: error.message },
+      { status: error.status },
+    );
   }
-  const message = error instanceof Error ? error.message : "Internal server error";
+  const message =
+    error instanceof Error ? error.message : "Internal server error";
   return NextResponse.json({ error: message }, { status: 500 });
 }

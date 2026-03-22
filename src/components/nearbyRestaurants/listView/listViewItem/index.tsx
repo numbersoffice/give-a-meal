@@ -12,10 +12,10 @@ export function ListViewItem({ business, isFocused, dict, ...rest }: ListViewIte
 
     return (
         <div className={`${styles.container} ${isFocused && styles.isFocused}`} {...rest}>
-            <p className="body_bold">{business.business_name}</p>
-            <p className="body_s">{business.street_number + " " + business.address}</p>
+            <p className="body_bold">{business.businessName}</p>
+            <p className="body_s">{business.streetNumber + " " + business.address}</p>
             <div className={styles.donationContainer}>
-                <p className="body_s_bold">{business.donation_count}</p>
+                <p className="body_s_bold">{business.donationCount}</p>
                 <p className="body_s">{mealText}</p>
             </div>
         </div>
