@@ -3,6 +3,10 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import { NextRequest, NextResponse } from "next/server";
 
+function generatePin(): string {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
 // claimDonation
 export async function POST(
   request: NextRequest,
@@ -26,10 +30,10 @@ export async function POST(
 
     const payload = await getPayload({ config });
 
-    // Get all active claims for this storage id
+    // Get all active reservations for this device
     const { totalDocs } = await payload.count({
-      collection: "donations",
-      where: { claimedBy: { equals: storageId } },
+      collection: "reservations",
+      where: { deviceId: { equals: storageId } },
     });
 
     if (totalDocs >= maxClaims) {
@@ -43,7 +47,7 @@ export async function POST(
       }, { status: 401 });
     }
 
-    // Check donation is unclaimed
+    // Check donation exists
     let donation;
     try {
       donation = await payload.findByID({
@@ -61,7 +65,13 @@ export async function POST(
       }, { status: 404 });
     }
 
-    if (donation.claimedBy) {
+    // Check donation isn't already reserved
+    const { totalDocs: existingReservations } = await payload.count({
+      collection: "reservations",
+      where: { donation: { equals: donationId } },
+    });
+
+    if (existingReservations > 0) {
       return NextResponse.json({
         error: {
           message: "Claim failed",
@@ -72,16 +82,34 @@ export async function POST(
       }, { status: 500 });
     }
 
-    await payload.update({
-      collection: "donations",
-      id: donationId,
-      data: { claimedBy: storageId },
+    // Check donation hasn't been redeemed
+    if (donation.redeemedAt) {
+      return NextResponse.json({
+        error: {
+          message: "Claim failed",
+          details: "This donation has already been redeemed.",
+          hint: "",
+          code: 400,
+        },
+      }, { status: 400 });
+    }
+
+    const pin = generatePin();
+
+    await payload.create({
+      collection: "reservations",
+      data: {
+        donation: donationId,
+        deviceId: storageId,
+        pin,
+      },
     });
 
     return NextResponse.json({
       data: {
         message: "Success",
         details: "Successfully claimed donation.",
+        pin,
         hint: "",
         code: 200,
       },

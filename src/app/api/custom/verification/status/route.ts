@@ -19,7 +19,6 @@ export async function GET(request: NextRequest) {
       depth: 1,
       limit: 1,
     });
-    console.log(users);
 
     if (users.length > 0) {
       const user = users[0];
@@ -117,7 +116,7 @@ export async function GET(request: NextRequest) {
         business: null,
         profile: null,
         verification: { verificationMode: null, connectionType: null },
-        _verified: users[0]._verified,
+        _verified: users[0]?._verified,
       },
     });
   } catch (error) {

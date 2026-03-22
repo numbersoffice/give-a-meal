@@ -14,10 +14,8 @@ import donationReceivedTemplate from "@/components/emailTemplates/donationReceiv
 // getDonationsFromBusiness
 export async function GET(request: NextRequest) {
   try {
-    const authData = await verifyAuth(request);
     const businessId = request.nextUrl.searchParams.get("businessId")!;
     const isActiveParam = request.nextUrl.searchParams.get("isActive");
-    await verifyBusinessMembership(authData, businessId);
 
     const payload = await getPayload({ config });
 
@@ -36,7 +34,37 @@ export async function GET(request: NextRequest) {
       depth: 2,
     });
 
-    return NextResponse.json(docs);
+    // Look up reservations for returned donations
+    const donationIds = docs.map((d) => d.id);
+
+    const { docs: reservations } =
+      donationIds.length > 0
+        ? await payload.find({
+            collection: "reservations",
+            where: { donation: { in: donationIds.join(",") } },
+            // limit: donationIds.length,
+          })
+        : { docs: [] };
+
+    const reservedDonationIds = new Set(
+      reservations.map((r) =>
+        typeof r.donation === "object" ? r.donation.id : r.donation,
+      ),
+    );
+
+    const docsWithReserved = docs.map((d) => ({
+      ...d,
+      reserved: reservedDonationIds.has(d.id),
+    }));
+
+    console.log(docsWithReserved);
+
+    // Filter out reserved donations when filtering by active status
+    if (isActiveParam) {
+      return NextResponse.json(docsWithReserved.filter((d) => !d.reserved));
+    }
+
+    return NextResponse.json(docsWithReserved);
   } catch (error) {
     return errorResponse(error);
   }
@@ -64,7 +92,7 @@ export async function POST(request: NextRequest) {
       limit: 1,
     });
 
-    console.log(items)
+    console.log(items);
 
     if (items.length === 0)
       throw new ApiError(
@@ -121,7 +149,10 @@ export async function POST(request: NextRequest) {
     } else {
       donor = await payload.create({
         collection: "donors",
-        data: { email: donorEmail, password: crypto.randomBytes(32).toString("hex") },
+        data: {
+          email: donorEmail,
+          password: crypto.randomBytes(32).toString("hex"),
+        },
       });
     }
 

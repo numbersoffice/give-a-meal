@@ -5,54 +5,71 @@ import donationClaimedTemplate from "@/components/emailTemplates/donationClaimed
 import { sendNotifications } from "@/lib/api/notifications";
 import { NextRequest, NextResponse } from "next/server";
 
-// redeemDonation
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ donationId: string }> }
-) {
+// redeemDonationByPin
+export async function POST(request: NextRequest) {
   try {
     const authData = await verifyAuth(request);
-    const { donationId } = await params;
     const { businessId, pin } = await request.json();
     const { user } = await verifyBusinessMembership(authData, businessId);
 
-    if (!donationId)
-      throw new ApiError(400, "Missing parameter: donationId.");
-
-    if (!pin)
-      throw new ApiError(400, "Missing parameter: pin.");
+    if (!pin || typeof pin !== "string" || pin.length !== 6)
+      throw new ApiError(400, "Invalid PIN. Please enter a 6-digit code.");
 
     const payload = await getPayload({ config });
 
-    // Find the reservation for this donation
+    // Find reservation by PIN
     const { docs: reservations } = await payload.find({
       collection: "reservations",
-      where: { donation: { equals: donationId } },
-      limit: 1,
+      where: { pin: { equals: pin } },
+      depth: 0,
+      limit: 10,
     });
 
     if (reservations.length === 0)
-      throw new ApiError(404, "No active reservation found for this donation.");
+      throw new ApiError(404, "No reservation found for this PIN.");
 
-    const reservation = reservations[0];
+    // Find the reservation whose donation belongs to this business
+    let matchedReservation = null;
+    let matchedDonation = null;
 
-    if (reservation.pin !== pin)
-      throw new ApiError(401, "Invalid PIN.");
+    for (const reservation of reservations) {
+      const donationId =
+        typeof reservation.donation === "object"
+          ? reservation.donation.id
+          : reservation.donation;
 
-    // Get the donation with item and business info
-    const donation = await payload.findByID({
-      collection: "donations",
-      id: donationId,
-      depth: 2,
-    });
+      const donation = await payload.findByID({
+        collection: "donations",
+        id: donationId,
+        depth: 2,
+      });
 
-    const item = typeof donation.item === "object" ? donation.item : null;
-    const business = typeof donation.business === "object" ? donation.business : null;
+      const donationBusinessId =
+        typeof donation.business === "object"
+          ? donation.business.id
+          : donation.business;
+
+      if (String(donationBusinessId) === String(businessId)) {
+        matchedReservation = reservation;
+        matchedDonation = donation;
+        break;
+      }
+    }
+
+    if (!matchedReservation || !matchedDonation)
+      throw new ApiError(404, "No reservation found for this PIN at your business.");
+
+    const item =
+      typeof matchedDonation.item === "object" ? matchedDonation.item : null;
+    const business =
+      typeof matchedDonation.business === "object"
+        ? matchedDonation.business
+        : null;
 
     // Redeem the donation
     const redeemed = await payload.update({
       collection: "donations",
-      id: donationId,
+      id: matchedDonation.id,
       data: {
         redeemedBy: user.id,
         redeemedAt: new Date().toISOString(),
@@ -62,18 +79,17 @@ export async function POST(
     // Delete the reservation
     await payload.delete({
       collection: "reservations",
-      id: reservation.id,
+      id: matchedReservation.id,
     });
 
     sendNotifications(businessId, "donation_removed", user.id);
 
     // Send notification to donor if there's a donor email
     try {
-      if (donation.donorName && item) {
-        // Look up donor by name to get email — best effort
+      if (matchedDonation.donorName && item) {
         const { docs: donors } = await payload.find({
           collection: "donors",
-          where: { firstName: { equals: donation.donorName } },
+          where: { firstName: { equals: matchedDonation.donorName } },
           limit: 1,
         });
         if (donors.length > 0 && donors[0].email) {
@@ -94,7 +110,7 @@ export async function POST(
       console.log(err);
     }
 
-    return NextResponse.json(redeemed);
+    return NextResponse.json({ ...redeemed, itemTitle: item?.title ?? null });
   } catch (error) {
     return errorResponse(error);
   }

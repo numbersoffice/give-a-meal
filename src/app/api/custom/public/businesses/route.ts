@@ -33,33 +33,51 @@ export async function GET(request: NextRequest) {
       };
     }
 
+    const hasDonations = request.nextUrl.searchParams.get("hasDonations");
+
     const { docs: businesses } = await payload.find({
       collection: "businesses",
       where,
       limit: 10,
     });
 
-    // Get donation counts
+    // Get active (unredeemed) donation counts, excluding reserved ones
     const counts: Record<string, number> = {};
     await Promise.all(
       businesses.map(async (b) => {
-        const { totalDocs } = await payload.count({
+        const { docs: donations } = await payload.find({
           collection: "donations",
           where: {
-            business: {
-              equals: b.id,
-            },
+            business: { equals: b.id },
+            redeemedAt: { exists: false },
           },
+          limit: 100,
         });
-        counts[b.id] = totalDocs;
+
+        if (donations.length === 0) {
+          counts[b.id] = 0;
+          return;
+        }
+
+        const donationIds = donations.map((d) => d.id);
+        const { totalDocs: reservedCount } = await payload.count({
+          collection: "reservations",
+          where: { donation: { in: donationIds.join(",") } },
+        });
+
+        counts[b.id] = donations.length - reservedCount;
       }),
     );
 
-    // Add to businesses
     const businessesWithCounts = businesses.map((b) => ({
       ...b,
       donationCount: counts[b.id],
     }));
+
+    // Only filter to businesses with donations if hasDonations param is provided
+    if (hasDonations) {
+      return NextResponse.json(businessesWithCounts.filter((b) => b.donationCount > 0));
+    }
 
     return NextResponse.json(businessesWithCounts);
   } catch (error) {

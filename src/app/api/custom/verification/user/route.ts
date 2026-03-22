@@ -2,6 +2,7 @@ import { verifyAuth, errorResponse, ApiError } from "@/lib/api/middleware";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { sendNotifications } from "@/lib/api/notifications";
+import staffVerificationRequestTemplate from "@/components/emailTemplates/staffVerificationRequest";
 import { NextRequest, NextResponse } from "next/server";
 
 // createUserVerification
@@ -54,6 +55,31 @@ export async function POST(request: NextRequest) {
     });
 
     sendNotifications(businessId, "team_request");
+
+    // Send email to business owners
+    const { docs: owners } = await payload.find({
+      collection: "businessUsers",
+      where: {
+        ownedBusinesses: { in: [businessId] },
+      },
+      limit: 100,
+    });
+
+    const template = staffVerificationRequestTemplate({
+      businessName: business.businessName,
+      requestEmail: authData.email,
+    });
+
+    for (const owner of owners) {
+      if (owner.email) {
+        await payload.sendEmail({
+          to: owner.email,
+          subject: "New employee request",
+          text: template.text,
+          html: template.html,
+        });
+      }
+    }
 
     return NextResponse.json(verification);
   } catch (error) {

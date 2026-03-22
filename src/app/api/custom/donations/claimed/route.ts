@@ -13,16 +13,46 @@ export async function GET(request: NextRequest) {
 
     const payload = await getPayload({ config });
 
-    const { docs } = await payload.find({
+    const { docs: reservations } = await payload.find({
+      collection: "reservations",
+      where: {
+        deviceId: { equals: claimId },
+      },
+      depth: 0,
+    });
+
+    if (reservations.length === 0) {
+      return NextResponse.json([]);
+    }
+
+    // Get the donation IDs from reservations
+    const donationIds = reservations.map((r) =>
+      typeof r.donation === "object" ? r.donation.id : r.donation
+    );
+
+    const { docs: donations } = await payload.find({
       collection: "donations",
       where: {
-        claimedBy: { equals: claimId },
+        id: { in: donationIds.join(",") },
         redeemedAt: { exists: false },
       },
       depth: 2,
     });
 
-    return NextResponse.json(docs);
+    // Attach pin and reservation id to each donation for the consumer
+    const donationsWithReservation = donations.map((d) => {
+      const reservation = reservations.find((r) => {
+        const rDonationId = typeof r.donation === "object" ? r.donation.id : r.donation;
+        return rDonationId === d.id;
+      });
+      return {
+        ...d,
+        pin: reservation?.pin,
+        reservationId: reservation?.id,
+      };
+    });
+
+    return NextResponse.json(donationsWithReservation);
   } catch (error) {
     return errorResponse(error);
   }

@@ -47,14 +47,6 @@ export const Donations: CollectionConfig = {
       },
     },
     {
-      name: "claimedBy",
-      type: "text",
-      admin: {
-        description:
-          "The anonymous ID of the device that is reserving this donation.",
-      },
-    },
-    {
       name: "donorName",
       type: "text",
       admin: {

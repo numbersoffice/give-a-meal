@@ -14,10 +14,12 @@ const pathsWithoutLocale = [
   "/_next/",
   "/api/",
   "/admin",
+  "/.well-known/",
   "/apple-app-site-association",
   "/favicon.ico",
   "/sitemap.xml",
   "/robots.txt",
+  "/assets/"
 ];
 const protectedPaths = ["/donors/profile"];
 

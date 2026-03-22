@@ -12,6 +12,7 @@ import { BusinessUsers } from "./collections/BusinessUsers";
 import { Donors } from "./collections/Donors";
 import { Items } from "./collections/Items";
 import { Donations } from "./collections/Donations";
+import { Reservations } from "./collections/Reservations";
 import { Verifications } from "./collections/Verifications";
 import { VerificationKeys } from "./collections/VerificationKeys";
 
@@ -74,6 +75,7 @@ export default buildConfig({
     Donors,
     Items,
     Donations,
+    Reservations,
     Verifications,
     VerificationKeys,
   ],

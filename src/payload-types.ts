@@ -75,6 +75,7 @@ export interface Config {
     donors: Donor;
     items: Item;
     donations: Donation;
+    reservations: Reservation;
     verifications: Verification;
     'verification-keys': VerificationKey;
     'payload-kv': PayloadKv;
@@ -90,6 +91,7 @@ export interface Config {
     donors: DonorsSelect<false> | DonorsSelect<true>;
     items: ItemsSelect<false> | ItemsSelect<true>;
     donations: DonationsSelect<false> | DonationsSelect<true>;
+    reservations: ReservationsSelect<false> | ReservationsSelect<true>;
     verifications: VerificationsSelect<false> | VerificationsSelect<true>;
     'verification-keys': VerificationKeysSelect<false> | VerificationKeysSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -315,15 +317,29 @@ export interface Donation {
    */
   redeemedBy?: (string | null) | BusinessUser;
   /**
-   * The anonymous ID of the device that is reserving this donation.
-   */
-  claimedBy?: string | null;
-  /**
    * [DEPRECATED] Use donatedBy instead
    */
   donorName?: string | null;
   donatedBy?: (string | null) | Donor;
   redeemedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations".
+ */
+export interface Reservation {
+  id: string;
+  donation: string | Donation;
+  /**
+   * The anonymous ID of the device that is reserving this donation.
+   */
+  deviceId: string;
+  /**
+   * 6-digit PIN the claimant must present to redeem.
+   */
+  pin: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -405,6 +421,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'donations';
         value: string | Donation;
+      } | null)
+    | ({
+        relationTo: 'reservations';
+        value: string | Reservation;
       } | null)
     | ({
         relationTo: 'verifications';
@@ -594,10 +614,20 @@ export interface DonationsSelect<T extends boolean = true> {
   business?: T;
   createdBy?: T;
   redeemedBy?: T;
-  claimedBy?: T;
   donorName?: T;
   donatedBy?: T;
   redeemedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations_select".
+ */
+export interface ReservationsSelect<T extends boolean = true> {
+  donation?: T;
+  deviceId?: T;
+  pin?: T;
   updatedAt?: T;
   createdAt?: T;
 }
