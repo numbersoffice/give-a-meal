@@ -95,7 +95,7 @@ export const Donors: CollectionConfig = {
       method: "post",
       handler: async (req) => {
         const { token } =
-          typeof req.json === "function" ? await req.json() : {};
+          typeof req.json === "function" ? await req.json() : { token: undefined };
 
         const { docs } = await req.payload.find({
           collection: "donors",
@@ -108,7 +108,7 @@ export const Donors: CollectionConfig = {
 
         if (!docs.length) {
           return new Response(JSON.stringify(
-            { error: "Invalid or expired token" },
+            { error: "Invalid or expired token" }),
             { status: 400 },
           );
         }
@@ -144,7 +144,7 @@ export const Donors: CollectionConfig = {
           token: loginResult.token,
           exp: loginResult.exp,
           user: loginResult.user,
-        });
+        }));
       },
     },
   ],
