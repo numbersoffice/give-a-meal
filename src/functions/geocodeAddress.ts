@@ -4,7 +4,7 @@
  * @returns {number, number} - Latitude and longitude
  */
 export default async function geocodeAddress(address: string) {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GEOCODING_API_KEY || "";
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
     address
   )}&key=${apiKey}`;

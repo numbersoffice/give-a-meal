@@ -5,7 +5,7 @@ import Close from "@/public/assets/icons/close.svg"
 import Search from "@/public/assets/icons/search.svg"
 import Location from "@/public/assets/icons/location.svg"
 import Image from "next/image"
-import React, { useEffect } from "react"
+import React from "react"
 import { NearbyRestaurantsContext } from "../Context"
 import geocodeAddress from "@/functions/geocodeAddress"
 
