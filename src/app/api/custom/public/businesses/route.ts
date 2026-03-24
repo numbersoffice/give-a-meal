@@ -18,27 +18,38 @@ export async function GET(request: NextRequest) {
       inactive: { equals: false },
     };
 
-    const minLat = request.nextUrl.searchParams.get("minlat");
-    const maxLat = request.nextUrl.searchParams.get("maxlat");
-    const minLon = request.nextUrl.searchParams.get("minlon");
-    const maxLon = request.nextUrl.searchParams.get("maxlon");
+    const minLat = parseFloat(request.nextUrl.searchParams.get("minlat") ?? "");
+    const maxLat = parseFloat(request.nextUrl.searchParams.get("maxlat") ?? "");
+    const minLon = parseFloat(request.nextUrl.searchParams.get("minlon") ?? "");
+    const maxLon = parseFloat(request.nextUrl.searchParams.get("maxlon") ?? "");
 
-    if (minLat && maxLat && minLon && maxLon) {
-      where.location = {
-        near: `${lon},${lat},100000,0`,
-      };
-    } else {
-      where.location = {
-        near: `${lon},${lat},100000,0`,
-      };
+    // Calculate search radius from bounds, or default to 100km
+    let maxDistance = 100000;
+    if (!isNaN(minLat) && !isNaN(maxLat) && !isNaN(minLon) && !isNaN(maxLon)) {
+      // Distance from center to corner of bounds in meters (haversine approximation)
+      const dLat = ((maxLat - minLat) / 2) * (Math.PI / 180);
+      const dLon = ((maxLon - minLon) / 2) * (Math.PI / 180);
+      const a =
+        Math.sin(dLat) * Math.sin(dLat) +
+        Math.cos(lat * (Math.PI / 180)) *
+          Math.cos(maxLat * (Math.PI / 180)) *
+          Math.sin(dLon) *
+          Math.sin(dLon);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      // Add 20% buffer so edge markers aren't cut off
+      maxDistance = Math.ceil(6371000 * c * 1.2);
     }
+
+    where.location = {
+      near: `${lon},${lat},${maxDistance},0`,
+    };
 
     const hasDonations = request.nextUrl.searchParams.get("hasDonations");
 
     const { docs: businesses } = await payload.find({
       collection: "businesses",
       where,
-      limit: 10,
+      limit: 50,
     });
 
     // Get active (unredeemed) donation counts, excluding reserved ones

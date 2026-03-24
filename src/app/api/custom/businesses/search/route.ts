@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     if (!businessName || typeof businessName !== "string")
       throw new ApiError(400, "Business name needs to be a string.");
 
-    const mapsApiKey = process.env.GOOGLE_MAPS_KEY;
+    const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
     const searchQuery = "?query=" + encodeURIComponent(businessName);
     const apiKeyQuery = "&key=" + mapsApiKey;
     const locationQuery = lat && lon ? "&location=" + encodeURIComponent(`${lat},${lon}`) : "";

@@ -29,7 +29,7 @@ export function keysToCamel(o: any): any {
 }
 
 export async function getBusinessDetailsFromGoogle(placeId: string) {
-  const mapsApiKey = process.env.GOOGLE_MAPS_KEY;
+  const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const url = `https://maps.googleapis.com/maps/api/place/details/json?fields=geometry,address_components,international_phone_number,website,business_status,name&place_id=${placeId}&key=${mapsApiKey}`;
 
   const response = await fetch(url);

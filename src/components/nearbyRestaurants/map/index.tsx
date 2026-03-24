@@ -26,6 +26,7 @@ export default function Map({
     addressFieldLocation,
     setBounds,
   } = useContext(NearbyRestaurantsContext);
+
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map>();
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
@@ -90,6 +91,17 @@ export default function Map({
       });
     }
   }, [map, setBounds]);
+
+  // Deselect business on map click (does not fire during pan/drag)
+  useEffect(() => {
+    if (!map) return;
+    const listener = map.addListener("click", () => {
+      setSelectedBusiness(null);
+    });
+    return () => {
+      google.maps.event.removeListener(listener);
+    };
+  }, [map, setSelectedBusiness]);
 
   // ---------
   // Utils
@@ -223,6 +235,7 @@ async function initMarkers(
         ? createBadgeElement(business.businessName)
         : createDotElement(),
       zIndex: isSelected ? 1000 : 0,
+      gmpClickable: true,
     });
 
     // Click event for marker

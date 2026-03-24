@@ -1,7 +1,7 @@
 "use client";
 
 import getBusinessesByLocation from "@/functions/getBusinessesByLocation";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import { Bounds } from "@/utils/getMapBounds";
 
 export const NearbyRestaurantsContext = createContext<{
@@ -52,25 +52,44 @@ export function NearbyRestaurantsProvider({ children }: { children: any }) {
   const [businesses, setBusinesses] = useState<any[] | null>(null);
   const [bounds, setBounds] = useState<Bounds | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const pos = { lat: 40.7143, lon: -73.9513 };
 
-  // Fetch business data
+  // Debounced fetch — waits 300ms after the last bounds change before fetching
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevBusinessIdsRef = useRef<string>("");
+
   useEffect(() => {
-    if (bounds) {
+    if (!bounds) return;
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      const centerLat = (bounds.lat.min + bounds.lat.max) / 2;
+      const centerLon = (bounds.lon.min + bounds.lon.max) / 2;
       setLoading(true);
       getBusinessesByLocation(
-        pos.lat,
-        pos.lon,
+        centerLat,
+        centerLon,
         bounds.lat.min,
         bounds.lon.min,
         bounds.lat.max,
         bounds.lon.max,
       ).then((data) => {
-        setBusinesses(data);
+        if (data) {
+          // Only update if the business list actually changed
+          const newIds = data.map((b: any) => b.id).sort().join(",");
+          if (newIds !== prevBusinessIdsRef.current) {
+            prevBusinessIdsRef.current = newIds;
+            setBusinesses(data);
+          }
+        }
         setLoading(false);
       });
-    }
-  }, [bounds, pos.lat, pos.lon]);
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [bounds]);
 
   const value = {
     businesses,
