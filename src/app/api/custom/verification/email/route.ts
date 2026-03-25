@@ -62,10 +62,10 @@ export async function POST(request: NextRequest) {
     });
 
     // Send verification email
-    const verificationBaseUrl = process.env.VERIFICATION_URL || `${request.nextUrl.origin}/api/verification/email-link`;
+    const verificationBaseUrl = process.env.VERIFICATION_URL || `${request.nextUrl.origin}/api/custom/verification/email-link`;
     const verificationURL = `${verificationBaseUrl}?key=${verificationKey}`;
     await payload.sendEmail({
-      to: emailAddress,
+      to: "maxibenner@gmail.com"/*emailAddress*/,
       subject: "Verify your business on Give a Meal",
       text: `Hi, please verify ${details.name} by visiting: ${verificationURL}`,
       html: `<h1>Verify your business</h1><p>Hi, please verify <strong>${details.name}</strong> on Give a Meal by clicking the link below.</p><p><a href="${verificationURL}">Verify your business</a></p>`,
