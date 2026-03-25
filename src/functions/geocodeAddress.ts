@@ -19,7 +19,7 @@ export default async function geocodeAddress(address: string) {
         lon: data.results[0].geometry.location.lng,
       };
     } else {
-      console.error("Geocoding failed:", data.status);
+      console.log(data)
     }
   } catch (error) {
     console.error("Error during geocoding:", error);
