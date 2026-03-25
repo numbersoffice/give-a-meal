@@ -21,9 +21,8 @@ const dirname = path.dirname(filename);
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
-  // TODO: Should we add this?
-  cors: ["http://192.168.8.182:3000", "http://localhost:3000", "https://www.give-a-meal.org"],
-  csrf: ["http://192.168.8.182:3000", "http://localhost:3000", "https://www.give-a-meal.org"],
+  cors: [process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"],
+  csrf: [process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"],
   admin: {
     user: Users.slug,
     importMap: {
