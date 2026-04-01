@@ -58,34 +58,61 @@ export const Verifications: CollectionConfig = {
           );
         }
 
-        const business = await req.payload.create({
+        // Check if a business with this placeId already exists (reactivation case)
+        const { docs: existingBusinesses } = await req.payload.find({
           collection: "businesses",
-          data: {
-            placeId: details.placeId,
-            businessName: details.name,
-            address: details.address.address ?? "",
-            streetNumber: details.address.streetNumber ?? "",
-            city: details.address.city ?? "",
-            postalCode: details.address.postalCode ?? "",
-            state: details.address.state ?? "",
-            country: details.address.country ?? "",
-            location: [details.location.lng, details.location.lat],
-            inactive: false,
-          },
+          where: { placeId: { equals: details.placeId } },
+          limit: 1,
         });
 
-        const businessUser = await req.payload.update({
-          where: {
-            email: {
-              equals: verification.verificationEmail,
+        let business;
+        if (existingBusinesses.length > 0) {
+          // Reactivate existing business
+          business = await req.payload.update({
+            collection: "businesses",
+            id: existingBusinesses[0].id,
+            data: { inactive: false },
+          });
+        } else {
+          // Create new business
+          business = await req.payload.create({
+            collection: "businesses",
+            data: {
+              placeId: details.placeId,
+              businessName: details.name,
+              address: details.address.address ?? "",
+              streetNumber: details.address.streetNumber ?? "",
+              city: details.address.city ?? "",
+              postalCode: details.address.postalCode ?? "",
+              state: details.address.state ?? "",
+              country: details.address.country ?? "",
+              location: [details.location.lng, details.location.lat],
+              inactive: false,
             },
-          },
-          limit: 0,
+          });
+        }
+
+        // Find the business user and append to ownedBusinesses
+        const { docs: existingUsers } = await req.payload.find({
           collection: "businessUsers",
-          data: {
-            ownedBusinesses: [business.id],
-          },
+          where: { email: { equals: verification.verificationEmail } },
+          limit: 1,
         });
+
+        let businessUser;
+        if (existingUsers.length > 0) {
+          const currentOwned = (
+            (existingUsers[0].ownedBusinesses as any[]) ?? []
+          ).map((b: any) => (typeof b === "object" ? b.id : b));
+          if (!currentOwned.includes(business.id)) {
+            currentOwned.push(business.id);
+          }
+          businessUser = await req.payload.update({
+            collection: "businessUsers",
+            id: existingUsers[0].id,
+            data: { ownedBusinesses: currentOwned },
+          });
+        }
 
         await req.payload.delete({
           collection: "verifications",
@@ -95,7 +122,7 @@ export const Verifications: CollectionConfig = {
         return Response.json({
           success: true,
           business: business.id,
-          businessUser: businessUser.docs[0],
+          businessUser,
         });
       },
     },

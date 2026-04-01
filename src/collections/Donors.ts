@@ -52,7 +52,9 @@ export const Donors: CollectionConfig = {
       path: "/magic-link/request",
       method: "post",
       handler: async (req) => {
-        const body = (typeof req.json === "function" ? await req.json() : {}) as { email?: string; lang?: string };
+        const body = (
+          typeof req.json === "function" ? await req.json() : {}
+        ) as { email?: string; lang?: string };
         const email = body.email ?? "";
         const lang = body.lang ?? "en";
         const { docs } = await req.payload.find({
@@ -62,6 +64,8 @@ export const Donors: CollectionConfig = {
         });
 
         // If no donor exists, create one — then proceed with the magic link flow
+        // TODO: Update this so no user is created. Users donors be created through stores
+        // Also update button label and description to not reference signup as it currently does but more of an instruction
         let donor = docs[0];
         if (!donor) {
           donor = await req.payload.create({
@@ -87,7 +91,9 @@ export const Donors: CollectionConfig = {
           html: `<a href="${baseUrl}/api/custom/auth/verify-email-link?token=${token}&lang=${lang || "en"}">Log in</a>`,
         });
 
-        return new Response(JSON.stringify({ ok: true }), { headers: { "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { "Content-Type": "application/json" },
+        });
       },
     },
     {
@@ -95,7 +101,9 @@ export const Donors: CollectionConfig = {
       method: "post",
       handler: async (req) => {
         const { token } =
-          typeof req.json === "function" ? await req.json() : { token: undefined };
+          typeof req.json === "function"
+            ? await req.json()
+            : { token: undefined };
 
         const { docs } = await req.payload.find({
           collection: "donors",
@@ -107,8 +115,8 @@ export const Donors: CollectionConfig = {
         });
 
         if (!docs.length) {
-          return new Response(JSON.stringify(
-            { error: "Invalid or expired token" }),
+          return new Response(
+            JSON.stringify({ error: "Invalid or expired token" }),
             { status: 400 },
           );
         }
@@ -140,11 +148,13 @@ export const Donors: CollectionConfig = {
           data: { password: crypto.randomBytes(32).toString("hex") } as any,
         });
 
-        return new Response(JSON.stringify({
-          token: loginResult.token,
-          exp: loginResult.exp,
-          user: loginResult.user,
-        }));
+        return new Response(
+          JSON.stringify({
+            token: loginResult.token,
+            exp: loginResult.exp,
+            user: loginResult.user,
+          }),
+        );
       },
     },
   ],

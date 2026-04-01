@@ -25,22 +25,37 @@ export async function POST(request: NextRequest) {
 
     const payload = await getPayload({ config });
 
-    // Create business
-    const business = await payload.create({
+    // Check if a business with this placeId already exists (reactivation case)
+    const { docs: existingBusinesses } = await payload.find({
       collection: "businesses",
-      data: {
-        placeId: details.placeId,
-        businessName: details.name,
-        address: details.address.address ?? "",
-        streetNumber: details.address.streetNumber ?? "",
-        city: details.address.city ?? "",
-        postalCode: details.address.postalCode ?? "",
-        state: details.address.state ?? "",
-        country: details.address.country ?? "",
-        location: [details.location.lng, details.location.lat],
-        inactive: false,
-      },
+      where: { placeId: { equals: details.placeId } },
+      limit: 1,
     });
+
+    let business;
+    if (existingBusinesses.length > 0) {
+      business = await payload.update({
+        collection: "businesses",
+        id: existingBusinesses[0].id,
+        data: { inactive: false },
+      });
+    } else {
+      business = await payload.create({
+        collection: "businesses",
+        data: {
+          placeId: details.placeId,
+          businessName: details.name,
+          address: details.address.address ?? "",
+          streetNumber: details.address.streetNumber ?? "",
+          city: details.address.city ?? "",
+          postalCode: details.address.postalCode ?? "",
+          state: details.address.state ?? "",
+          country: details.address.country ?? "",
+          location: [details.location.lng, details.location.lat],
+          inactive: false,
+        },
+      });
+    }
 
     // Find or create business user
     const { docs: existingUsers } = await payload.find({
