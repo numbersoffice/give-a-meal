@@ -22,7 +22,7 @@ export default function DonationCard({
       <h2>{dict.title}</h2>
       <p className="body">{dict.subOne}</p>
       <Button
-        href="https://donate.stripe.com/28oeXq9cc0Vz2PeeUX"
+        href="https://donate.stripe.com/8x26oHdal3Bf14negyb7y04"
         className={s.button}
         large
       >
