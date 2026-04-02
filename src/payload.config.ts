@@ -60,6 +60,12 @@ export default buildConfig({
           minWidth: "small",
           maxWidth: "medium",
         },
+        {
+          slug: "thank-you-email",
+          Component: "./components/payload/ThankYouEmailWidget/index.tsx#default",
+          minWidth: "small",
+          maxWidth: "full",
+        },
       ],
       defaultLayout: () => [
         { widgetSlug: "business-count", width: "small" },
@@ -67,6 +73,7 @@ export default buildConfig({
         { widgetSlug: "donor-count", width: "small" },
         { widgetSlug: "donation-count", width: "small" },
         { widgetSlug: "item-count", width: "small" },
+        { widgetSlug: "thank-you-email", width: "small" },
         { widgetSlug: "collections", width: "full" },
       ],
     },

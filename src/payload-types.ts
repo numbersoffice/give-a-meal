@@ -118,6 +118,7 @@ export interface Config {
     'donor-count': DonorCountWidget;
     'donation-count': DonationCountWidget;
     'item-count': ItemCountWidget;
+    'thank-you-email': ThankYouEmailWidget;
     collections: CollectionsWidget;
   };
   user: User | BusinessUser | Donor;
@@ -921,6 +922,16 @@ export interface ItemCountWidget {
     [k: string]: unknown;
   };
   width: 'small' | 'medium';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "thank-you-email_widget".
+ */
+export interface ThankYouEmailWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'small' | 'medium' | 'large' | 'x-large' | 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -4,6 +4,7 @@ import { default as default_debd091b8e3311d039ee215558b2dcfe } from '../../../co
 import { default as default_63c93d65463dfeaf1cdbc620f2dc44d9 } from '../../../components/payload/DonorCountWidget.tsx'
 import { default as default_b9697bd995ad17798e908fa9827ec63d } from '../../../components/payload/DonationCountWidget.tsx'
 import { default as default_7b7fff47b3b1285a046e8310b14e32cd } from '../../../components/payload/ItemCountWidget.tsx'
+import { default as default_1b5455fc127b5ba326abe60fb0aca138 } from '../../../components/payload/ThankYouEmailWidget/index.tsx'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
@@ -13,5 +14,6 @@ export const importMap = {
   "./components/payload/DonorCountWidget.tsx#default": default_63c93d65463dfeaf1cdbc620f2dc44d9,
   "./components/payload/DonationCountWidget.tsx#default": default_b9697bd995ad17798e908fa9827ec63d,
   "./components/payload/ItemCountWidget.tsx#default": default_7b7fff47b3b1285a046e8310b14e32cd,
+  "./components/payload/ThankYouEmailWidget/index.tsx#default": default_1b5455fc127b5ba326abe60fb0aca138,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

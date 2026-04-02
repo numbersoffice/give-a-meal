@@ -1,0 +1,194 @@
+.widget {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.widgetLabel {
+  margin: 0;
+  font-size: 14px;
+  color: var(--theme-elevation-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.widgetDescription {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--theme-elevation-600);
+}
+
+.widgetButton {
+  align-self: stretch;
+  margin: 0;
+}
+
+/* Modal overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal {
+  background: var(--theme-bg);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal header */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--theme-elevation-150);
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--theme-elevation-500);
+  padding: 0 4px;
+  margin: 0;
+}
+
+/* Modal body */
+.modalBody {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  background: var(--theme-input-bg);
+  color: var(--theme-text);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.listContainer {
+  margin-top: 12px;
+}
+
+.hint {
+  color: var(--theme-elevation-500);
+  font-size: 14px;
+}
+
+.listItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  background: var(--theme-bg);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--theme-text);
+  box-sizing: border-box;
+}
+
+.listItemSelected {
+  border: 2px solid var(--theme-text);
+  background: var(--theme-elevation-100);
+}
+
+.listItemName {
+  color: var(--theme-elevation-500);
+  margin-left: 8px;
+}
+
+/* Donor chip */
+.donorChip {
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+  background: var(--theme-elevation-50);
+  border: 1px solid var(--theme-elevation-150);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.changeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--theme-elevation-500);
+  font-size: 13px;
+  text-decoration: underline;
+  margin: 0;
+}
+
+.donationHint {
+  font-size: 14px;
+  color: var(--theme-elevation-600);
+  margin-bottom: 12px;
+}
+
+/* Result banner */
+.resultSuccess {
+  padding: 16px;
+  border-radius: 4px;
+  background: var(--theme-success-100);
+  color: var(--theme-success-500);
+  font-size: 14px;
+}
+
+.resultError {
+  padding: 16px;
+  border-radius: 4px;
+  background: var(--theme-error-100);
+  color: var(--theme-error-500);
+  font-size: 14px;
+}
+
+/* Modal footer */
+.modalFooter {
+  padding: 16px 24px;
+  border-top: 1px solid var(--theme-elevation-150);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modalFooter button {
+  width: 100%;
+  margin: 0;
+}
+
+.modalFooterEnd {
+  padding: 16px 24px;
+  border-top: 1px solid var(--theme-elevation-150);
+  display: flex;
+  justify-content: flex-end;
+}
