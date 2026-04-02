@@ -6,17 +6,14 @@ import s from "./styles.module.css";
 import { updateProfileName } from "@/lib/actions";
 import { Locale } from "@/i18n-config";
 import { getDictionary } from "@/get-dictionary-server";
-import { getPayload } from "payload";
-import config from "@payload-config";
+import { getDonor } from "@/lib/auth/getDonor";
 
 export default async function Page({
-  searchParams,
   params,
 }: {
   searchParams?: Promise<{ [key: string]: string | undefined }>;
   params: Promise<{ lang: string }>;
 }) {
-  const sp = await searchParams;
   const { lang: langParam } = await params;
   const lang = langParam as Locale;
   const {
@@ -30,23 +27,7 @@ export default async function Page({
     },
   } = await getDictionary(lang);
 
-  const donorId = sp?.id || "";
-  const donorEmail = sp?.email || "";
-
-  // Get donor from Payload
-  const payload = await getPayload({ config });
-  let donor = null;
-
-  if (donorId) {
-    try {
-      donor = await payload.findByID({
-        collection: "donors",
-        id: donorId,
-      });
-    } catch {
-      // Donor not found
-    }
-  }
+  const donor = await getDonor(lang);
 
   function EmailActionText() {
     return (
@@ -73,7 +54,7 @@ export default async function Page({
           <TextInput
             placeholder={displayName.placeholder}
             maxLength={24}
-            defaultValue={donor?.firstName || ""}
+            defaultValue={donor.firstName || ""}
             small
             name="profileName"
             className={s.textInput}
@@ -87,7 +68,7 @@ export default async function Page({
           <p>{email.description}</p>
           <TextInput
             disabled
-            defaultValue={donor?.email || donorEmail}
+            defaultValue={donor.email || ""}
             small
             className={s.textInput}
           />

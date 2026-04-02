@@ -8,37 +8,19 @@ All authenticated endpoints require a valid session token for a `businessUsers` 
 
 ## Authentication
 
-### `GET /api/auth/verify-id-token`
-
-Verify the current session and get user info.
-
-**Auth:** Required
-
-**Response (200):**
-```json
-{ "email": "user@example.com", "uid": "abc123" }
-```
-
-**Response (403):**
-```json
-{ "error": "Unauthorized" }
-```
-
----
-
 ### `GET /api/auth/verify-email-link`
 
-Validates an email sign-in link and creates a session.
+Validates a donor magic link token and creates a session.
 
-**Auth:** None (email verification flow)
+**Auth:** None (magic link flow)
 
 **Query Parameters:**
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `email` | string | yes | The email to verify |
-| `user-lang` | string | yes | Language code for redirect |
+| `token` | string | yes | The magic link token |
+| `lang` | string | no | Language code for redirect (default: `en`) |
 
-**Response:** Redirect to `/donors/profile` or `/donors/login`
+**Response:** Sets `payload-token` cookie and redirects to `/{lang}/donors/profile`, or redirects to `/{lang}/donors/login` on failure.
 
 ---
 

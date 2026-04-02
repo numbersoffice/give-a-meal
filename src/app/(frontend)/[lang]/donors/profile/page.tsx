@@ -6,10 +6,8 @@ import localeLink from "@/utils/localeLink";
 import { getDictionary } from "@/get-dictionary-server";
 
 export default async function Page({
-  searchParams,
   params,
 }: {
-  searchParams?: Promise<{ [key: string]: string | undefined }>;
   params: Promise<{ lang: string }>;
 }) {
   const { lang: langParam } = await params;
@@ -26,7 +24,7 @@ export default async function Page({
     <>
       {/* Desktop only */}
       <div className={s.desktopOnly}>
-        <GeneralPage params={params} searchParams={searchParams} />
+        <GeneralPage params={params} />
       </div>
       {/* Mobile only */}
       <div className={s.mobileOnly}>

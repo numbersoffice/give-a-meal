@@ -7,7 +7,7 @@ import getProxyOrigin from "./utils/getProxyOrigin";
 
 /**
  * This middleware is only responsible for the frontend and the donor portal
- * It is does NOT touch the API and it's authentication logic
+ * It does NOT touch the API and its authentication logic
  */
 
 const pathsWithoutLocale = [
@@ -23,11 +23,6 @@ const pathsWithoutLocale = [
 ];
 const protectedPaths = ["/donors/profile"];
 
-/**
- * Transforms the request object by adding locale and auth data
- * @param request
- * @returns request
- */
 export async function middleware(request: NextRequest) {
   const origin = getProxyOrigin(request);
   if (!origin) return NextResponse.next();
@@ -46,55 +41,28 @@ export async function middleware(request: NextRequest) {
   // Locale: paths that are missing a locale
   currentPathname = getPathnameWithLocale(request);
 
-  // Skip: paths that should not have authentication
-  let pathIsProtected = false;
-  for (const path of protectedPaths) {
-    if (currentPathname.includes(path)) {
-      pathIsProtected = true;
-    }
-  }
+  // Check if path requires authentication
+  const pathIsProtected = protectedPaths.some((path) =>
+    currentPathname.includes(path)
+  );
 
-  // Response: redirect to login if the path is protected and not authenticated
-  if (!pathIsProtected) {
-    // Prevent re-direct if the current pathname is the same as the request pathname
-    if (currentPathname === request.nextUrl.pathname) {
-      return NextResponse.next();
-    } else {
-      const slug = currentPathname + request.nextUrl.search;
-      const url = new URL(slug, origin);
+  if (pathIsProtected) {
+    // Redirect to login if no auth cookie is present.
+    // Actual token verification happens in the page via payload.auth().
+    const hasToken = request.cookies.has("payload-token");
+    if (!hasToken) {
+      const locale = currentPathname.split("/")[1] || "en";
+      const url = new URL(`/${locale}/donors/login`, origin);
       return NextResponse.redirect(url);
     }
   }
 
-  // Authentication:
-  // 1) Return pathname unchanged if no authentication is needed
-  // 2) Return data with user info if authenticated
-  // 3) Return pathname to login url if not authenticated
-  const result = await handleAuthentication(request, currentPathname);
-  if (result.pathname) {
-    currentPathname = result.pathname;
-  }
-
-  // Pass through existing query parameters
-  const params = new URLSearchParams(request.nextUrl.search);
-
-  // Add user data to the query parameters
-  if (result.data) {
-    !params.get("id") && params.append("id", result.data.id);
-    !params.get("email") && params.append("email", result.data.email);
-  }
-
-  // Edit pathname with query parameters
-  currentPathname = `${currentPathname}?${params.toString()}`;
-
-  // Response: create new URL
-  const url = new URL(currentPathname, origin);
-
-  // Response: return the modified url and query parameters
-  // Prevent re-direct if the current pathname is the same as the request pathname
-  if (currentPathname === request.nextUrl.pathname + request.nextUrl.search) {
+  // Prevent redirect if the current pathname is the same as the request pathname
+  if (currentPathname === request.nextUrl.pathname) {
     return NextResponse.next();
   } else {
+    const slug = currentPathname + request.nextUrl.search;
+    const url = new URL(slug, origin);
     return NextResponse.redirect(url);
   }
 }
@@ -103,16 +71,9 @@ export async function middleware(request: NextRequest) {
 /******************** FUNCTIONS *********************/
 /****************************************************/
 
-type AuthResult = {
-  pathname: string;
-  data: null | { id: string; email: string };
-};
-
-// Adjusted routing logic to only determine the target pathname
 function getPathnameWithLocale(request: NextRequest): string {
   let pathname = request.nextUrl.pathname;
 
-  // Check if pathname is missing locale
   const pathnameIsMissingLocale = i18n.locales.every(
     (locale) => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
   );
@@ -122,14 +83,9 @@ function getPathnameWithLocale(request: NextRequest): string {
     pathname = `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`;
   }
 
-  return pathname; // Return the current pathname if no modifications are needed
+  return pathname;
 }
 
-/**
- * Get the locale from the request headers
- * @param {NextRequest} request
- * @returns {string | undefined} The locale or undefined if not found
- */
 function getLocale(request: NextRequest): string | undefined {
   const negotiatorHeaders: Record<string, string> = {};
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
@@ -141,48 +97,4 @@ function getLocale(request: NextRequest): string | undefined {
   const locale = matchLocale(languages, locales, i18n.defaultLocale);
 
   return locale;
-}
-
-/**
- * Verifies a Payload JWT token via the verify-id-token API route
- * @param request
- * @param pathname The desired pathname (if different from the request)
- * @returns The user's email and id or null
- */
-async function handleAuthentication(
-  request: NextRequest,
-  pathname: string
-): Promise<AuthResult> {
-  const origin = getProxyOrigin(request);
-
-  let authResult: AuthResult = {
-    pathname: pathname,
-    data: null,
-  };
-
-  // Verify token via API route
-  try {
-    const token = request.cookies.get("payload-token")?.value;
-    if (!token) {
-      authResult.pathname = "donors/login";
-      return authResult;
-    }
-
-    // Pass token via Authorization header instead of cookie to avoid
-    // Payload's CSRF check rejecting server-side fetches that lack
-    // browser headers (Origin / Sec-Fetch-Site).
-    let response = await fetch(`${origin}/api/custom/auth/verify-id-token`, {
-      headers: { Authorization: `JWT ${token}` },
-    });
-
-    // Return user data
-    if (response.ok) {
-      const res = await response.json();
-      authResult.data = { email: res.email, id: res.id };
-    } else {
-      // Redirect to login if not authenticated
-      authResult.pathname = "donors/login";
-    }
-  } catch (err) {}
-  return authResult;
 }

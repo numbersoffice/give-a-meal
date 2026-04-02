@@ -4,31 +4,30 @@ import { getDictionary } from "@/get-dictionary-server";
 import { Locale } from "@/i18n-config";
 import { getPayload } from "payload";
 import config from "@payload-config";
+import { getDonor } from "@/lib/auth/getDonor";
 
 export const revalidate = 0;
 
 export default async function Page({
-  searchParams,
   params,
 }: {
   searchParams?: Promise<{ [key: string]: string | undefined }>;
   params: Promise<{ lang: string }>;
 }) {
-  const sp = await searchParams;
   const { lang: langParam } = await params;
   const lang = langParam as Locale;
   const {
     pages: { donors },
   } = await getDictionary(lang);
 
-  const donorId = sp?.id || "";
+  const donor = await getDonor(lang);
 
   // Get donations from Payload
   const payload = await getPayload({ config });
   const { docs: donations } = await payload.find({
     collection: "donations",
     where: {
-      donatedBy: { equals: donorId },
+      donatedBy: { equals: donor.id },
     },
     depth: 1,
   });
