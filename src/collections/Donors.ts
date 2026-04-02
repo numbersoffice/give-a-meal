@@ -63,15 +63,12 @@ export const Donors: CollectionConfig = {
           limit: 1,
         });
 
-        // If no donor exists, create one — then proceed with the magic link flow
-        // TODO: Update this so no user is created. Users donors be created through stores
-        // Also update button label and description to not reference signup as it currently does but more of an instruction
-        let donor = docs[0];
+        const donor = docs[0];
         if (!donor) {
-          donor = await req.payload.create({
-            collection: "donors",
-            data: { email, password: crypto.randomBytes(32).toString("hex") },
-          });
+          return new Response(
+            JSON.stringify({ error: "no_account" }),
+            { status: 404, headers: { "Content-Type": "application/json" } },
+          );
         }
 
         const token = crypto.randomBytes(32).toString("hex");

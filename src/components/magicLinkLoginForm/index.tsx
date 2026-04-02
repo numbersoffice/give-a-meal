@@ -32,6 +32,7 @@ export default function MagicLinkLoginForm({ title,
     const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [success, setSuccess] = useState(false);
+    const [noAccount, setNoAccount] = useState(false);
     const [dict, setDict] = useState<any>(null)
 
 
@@ -55,6 +56,8 @@ export default function MagicLinkLoginForm({ title,
             if (res.ok) {
                 setEmail(email);
                 setSuccess(true);
+            } else if (res.status === 404) {
+                setNoAccount(true);
             }
         } catch (error) {
             console.log(error);
@@ -65,6 +68,9 @@ export default function MagicLinkLoginForm({ title,
 
     if (success) return (
         <p className={`body ${s.textContainer}`} dangerouslySetInnerHTML={{ __html: fillTemplate(dict.pages.donors.login.form.successMessage, email) }}></p>
+    )
+    if (noAccount) return (
+        <p className={`body ${s.textContainer}`}>{dict.pages.donors.login.form.noAccountMessage}</p>
     )
     else return (
         <form className={s.form} onSubmit={handleSubmit} method='POST'>

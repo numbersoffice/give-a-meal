@@ -337,10 +337,11 @@
           "title": "Juntos contra la inseguridad alimentaria"
         },
         "form": {
-          "title": "Accede a tu perfil de donante",
+          "title": "Inicia sesión en tu perfil de donante",
           "emailLabel": "Correo electrónico",
-          "button": "Iniciar sesión / Registrarse",
-          "successMessage": "Enviamos un correo electrónico a <b>%d</b>. Revisa tu correo electrónico y haz clic en el enlace para iniciar sesión."
+          "button": "Iniciar sesión",
+          "successMessage": "Enviamos un correo electrónico a <b>%d</b>. Revisa tu correo electrónico y haz clic en el enlace para iniciar sesión.",
+          "noAccountMessage": "No se encontró una cuenta con este correo electrónico. Las cuentas se crean automáticamente cuando donas en un restaurante asociado."
         },
         "successMessage": "Hemos enviado un correo electrónico a maxibenner@gmail.com. Por favor, revisa tu correo electrónico y haz clic en el enlace para iniciar sesión."
       },

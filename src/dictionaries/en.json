@@ -335,10 +335,11 @@
           "title": "Together against food insecurity"
         },
         "form": {
-          "title": "Access your donor profile",
+          "title": "Log in to your donor profile",
           "emailLabel": "Email",
-          "button": "Log in / Sign up",
-          "successMessage": "We sent an email to <b>%d</b>. Check your email and click the link to log in."
+          "button": "Log in",
+          "successMessage": "We sent an email to <b>%d</b>. Check your email and click the link to log in.",
+          "noAccountMessage": "No account found for this email. Accounts are created automatically when you donate at a partner restaurant."
         },
         "successMessage": "We sent an email to maxibenner@gmail.com. Check your email and click the link to log in."
       },
