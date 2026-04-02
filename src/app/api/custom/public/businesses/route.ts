@@ -26,7 +26,6 @@ export async function GET(request: NextRequest) {
     // Calculate search radius from bounds, or default to 100km
     let maxDistance = 100000;
     if (!isNaN(minLat) && !isNaN(maxLat) && !isNaN(minLon) && !isNaN(maxLon)) {
-      // Distance from center to corner of bounds in meters (haversine approximation)
       const dLat = ((maxLat - minLat) / 2) * (Math.PI / 180);
       const dLon = ((maxLon - minLon) / 2) * (Math.PI / 180);
       const a =
@@ -36,8 +35,7 @@ export async function GET(request: NextRequest) {
           Math.sin(dLon) *
           Math.sin(dLon);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      // Add 20% buffer so edge markers aren't cut off
-      maxDistance = Math.ceil(6371000 * c * 1.2);
+      maxDistance = Math.ceil(6371000 * c);
     }
 
     where.location = {
@@ -46,11 +44,20 @@ export async function GET(request: NextRequest) {
 
     const hasDonations = request.nextUrl.searchParams.get("hasDonations");
 
-    const { docs: businesses } = await payload.find({
+    const { docs: allBusinesses } = await payload.find({
       collection: "businesses",
       where,
       limit: 50,
     });
+
+    // Filter to businesses within the visible map bounds
+    const businesses =
+      !isNaN(minLat) && !isNaN(maxLat) && !isNaN(minLon) && !isNaN(maxLon)
+        ? allBusinesses.filter((b) => {
+            const [bLon, bLat] = b.location as [number, number];
+            return bLat >= minLat && bLat <= maxLat && bLon >= minLon && bLon <= maxLon;
+          })
+        : allBusinesses;
 
     // Get active (unredeemed) donation counts, excluding reserved ones
     const counts: Record<string, number> = {};

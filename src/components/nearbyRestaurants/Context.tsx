@@ -55,6 +55,7 @@ export function NearbyRestaurantsProvider({ children }: { children: any }) {
 
   // Debounced fetch — waits 300ms after the last bounds change before fetching
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hasFetchedRef = useRef(false);
   const prevBusinessIdsRef = useRef<string>("");
 
   useEffect(() => {
@@ -74,13 +75,13 @@ export function NearbyRestaurantsProvider({ children }: { children: any }) {
         bounds.lat.max,
         bounds.lon.max,
       ).then((data) => {
-        if (data) {
-          // Only update if the business list actually changed
-          const newIds = data.map((b: any) => b.id).sort().join(",");
-          if (newIds !== prevBusinessIdsRef.current) {
-            prevBusinessIdsRef.current = newIds;
-            setBusinesses(data);
-          }
+        const result = data ?? [];
+        // Only update if the business list actually changed
+        const newIds = result.map((b: any) => b.id).sort().join(",");
+        if (!hasFetchedRef.current || newIds !== prevBusinessIdsRef.current) {
+          hasFetchedRef.current = true;
+          prevBusinessIdsRef.current = newIds;
+          setBusinesses(result);
         }
         setLoading(false);
       });
