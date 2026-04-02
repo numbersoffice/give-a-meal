@@ -162,9 +162,17 @@ async function handleAuthentication(
 
   // Verify token via API route
   try {
-    const cookie = request.headers.get("cookie") || "";
+    const token = request.cookies.get("payload-token")?.value;
+    if (!token) {
+      authResult.pathname = "donors/login";
+      return authResult;
+    }
+
+    // Pass token via Authorization header instead of cookie to avoid
+    // Payload's CSRF check rejecting server-side fetches that lack
+    // browser headers (Origin / Sec-Fetch-Site).
     let response = await fetch(`${origin}/api/custom/auth/verify-id-token`, {
-      headers: { cookie },
+      headers: { Authorization: `JWT ${token}` },
     });
 
     // Return user data
