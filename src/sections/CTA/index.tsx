@@ -10,7 +10,7 @@ import { Locale } from "@/i18n-config";
 import { getDictionary } from "@/get-dictionary-server";
 import localeLink from "@/utils/localeLink";
 import getRecentDonationsAndBusinesses from "@/functions/getRecentDonationsAndBusinesses";
-
+ 
 /**
  * CTA section displaying three buttons and a marquee of recent donations
  * @param lang Sets the language of the component

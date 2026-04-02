@@ -20,11 +20,17 @@ export default async function getRecentDonationsAndBusinesses(dictionary: any) {
         sort: "-createdAt",
         limit: 5,
         depth: 2,
+        where: {
+          "business.inactive": { not_equals: true },
+        },
       }),
       payload.find({
         collection: "businesses",
         sort: "-createdAt",
         limit: 5,
+        where: {
+          inactive: { not_equals: true },
+        },
       }),
     ]);
 
