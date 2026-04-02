@@ -367,6 +367,11 @@
           }
         }
       }
+    },
+    "notFound": {
+      "title": "This page is off the menu",
+      "description": "We couldn't find what you were looking for. Let's get you back to sharing meals.",
+      "cta": "Back to Home"
     }
   }
 }

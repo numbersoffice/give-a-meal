@@ -1,7 +1,7 @@
 import Navigation from "@/components/navigation";
 import { Locale, i18n } from "@/i18n-config";
 import Script from "next/script";
-import "@/app/globals.css";
+
 import Toaster from "@/components/toaster";
 
 export async function generateStaticParams() {
@@ -18,7 +18,7 @@ export default async function RootLayout({
   const { lang: langParam } = await params;
   const lang = langParam as Locale;
   return (
-    <html lang={lang}>
+    <>
       <Script id="google-tag-manager" defer={true}>
         {`
           (function(w,d,s,l,i){
@@ -31,19 +31,17 @@ export default async function RootLayout({
           })(window,document,'script','dataLayer','GTM-5XJTLZGM');
         `}
       </Script>
-      <body>
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-5XJTLZGM"
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-          ></iframe>
-        </noscript>
-        <Navigation lang={lang} />
-        <Toaster />
-        <main>{children}</main>
-      </body>
-    </html>
+      <noscript>
+        <iframe
+          src="https://www.googletagmanager.com/ns.html?id=GTM-5XJTLZGM"
+          height="0"
+          width="0"
+          style={{ display: "none", visibility: "hidden" }}
+        ></iframe>
+      </noscript>
+      <Navigation lang={lang} />
+      <Toaster />
+      <main>{children}</main>
+    </>
   );
 }

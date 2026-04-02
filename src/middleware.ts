@@ -57,9 +57,13 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Pass pathname to server components (used by not-found page for locale detection)
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", currentPathname);
+
   // Prevent redirect if the current pathname is the same as the request pathname
   if (currentPathname === request.nextUrl.pathname) {
-    return NextResponse.next();
+    return NextResponse.next({ request: { headers: requestHeaders } });
   } else {
     const slug = currentPathname + request.nextUrl.search;
     const url = new URL(slug, origin);

@@ -369,6 +369,11 @@
           }
         }
       }
+    },
+    "notFound": {
+      "title": "Esta página no está en el menú",
+      "description": "No pudimos encontrar lo que buscabas. Volvamos a compartir comidas.",
+      "cta": "Volver al inicio"
     }
   }
 }
