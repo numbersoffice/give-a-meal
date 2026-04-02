@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Button from "../button";
+import Callout from "../callout";
 import TextInput from "../textInput";
 import s from "./styles.module.css"
 import { useEffect, useState } from "react";
@@ -69,12 +70,12 @@ export default function MagicLinkLoginForm({ title,
     if (success) return (
         <p className={`body ${s.textContainer}`} dangerouslySetInnerHTML={{ __html: fillTemplate(dict.pages.donors.login.form.successMessage, email) }}></p>
     )
-    if (noAccount) return (
-        <p className={`body ${s.textContainer}`}>{dict.pages.donors.login.form.noAccountMessage}</p>
-    )
-    else return (
+    return (
         <form className={s.form} onSubmit={handleSubmit} method='POST'>
             <h3>{title}</h3>
+            {noAccount && (
+                <Callout type="info">{dict.pages.donors.login.form.noAccountMessage}</Callout>
+            )}
             <TextInput defaultValue={defaultEmail || undefined} name="email" label={emailLabel} type="email" />
             <Button large>{buttonLabel}</Button>
             <div className={s.linkContainer}>

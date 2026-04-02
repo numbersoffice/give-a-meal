@@ -1,0 +1,49 @@
+.callout {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: var(--border-radius-xs);
+    border: 1px solid;
+}
+
+.icon {
+    flex-shrink: 0;
+    display: flex;
+    margin-top: 1px;
+}
+
+.message {
+    font-size: 14px;
+    line-height: 150%;
+}
+
+.error {
+    background-color: #FEF2F2;
+    border-color: #FECACA;
+    color: #991B1B;
+}
+
+.error .icon {
+    color: #EF4444;
+}
+
+.warning {
+    background-color: #FFFBEB;
+    border-color: #FDE68A;
+    color: #78350F;
+}
+
+.warning .icon {
+    color: #F59E0B;
+}
+
+.info {
+    background-color: #EFF6FF;
+    border-color: #BFDBFE;
+    color: #1E3A5F;
+}
+
+.info .icon {
+    color: #3B82F6;
+}

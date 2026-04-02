@@ -1,3 +1,4 @@
+import magicLinkLoginTemplate from "@/components/emailTemplates/magicLinkLogin";
 import { magicLinkStrategy } from "@/strategies/magic-link";
 import type { CollectionConfig } from "payload";
 import crypto from "crypto";
@@ -65,10 +66,10 @@ export const Donors: CollectionConfig = {
 
         const donor = docs[0];
         if (!donor) {
-          return new Response(
-            JSON.stringify({ error: "no_account" }),
-            { status: 404, headers: { "Content-Type": "application/json" } },
-          );
+          return new Response(JSON.stringify({ error: "no_account" }), {
+            status: 404,
+            headers: { "Content-Type": "application/json" },
+          });
         }
 
         const token = crypto.randomBytes(32).toString("hex");
@@ -82,10 +83,15 @@ export const Donors: CollectionConfig = {
 
         const baseUrl =
           process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-        await req.payload.sendEmail({
+        const loginUrl = `${baseUrl}/api/custom/auth/verify-email-link?token=${token}&lang=${lang || "en"}`;
+        const { text, html } = magicLinkLoginTemplate({ loginUrl });
+
+        // Send without waiting
+        req.payload.sendEmail({
           to: email,
-          subject: "Your login link",
-          html: `<a href="${baseUrl}/api/custom/auth/verify-email-link?token=${token}&lang=${lang || "en"}">Log in</a>`,
+          subject: "Sign in to Give a Meal",
+          text,
+          html,
         });
 
         return new Response(JSON.stringify({ ok: true }), {
