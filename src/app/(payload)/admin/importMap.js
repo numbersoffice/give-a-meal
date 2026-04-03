@@ -1,4 +1,6 @@
 import { default as default_0e7f9e2c5737e1de76aab6448112c66b } from '../../../components/payload/VerificationActions.tsx'
+import { default as default_8e8c0661092bb71539daae0d0c543310 } from '../../../components/payload/customIcon/index.tsx'
+import { default as default_2a4dc51cdaf353f16c5237db29c4e048 } from '../../../components/payload/customLogo/index.tsx'
 import { default as default_3445dab61774ef8673ea5bc3beb90a9e } from '../../../components/payload/BusinessCountWidget.tsx'
 import { default as default_debd091b8e3311d039ee215558b2dcfe } from '../../../components/payload/VerificationCountWidget.tsx'
 import { default as default_63c93d65463dfeaf1cdbc620f2dc44d9 } from '../../../components/payload/DonorCountWidget.tsx'
@@ -9,6 +11,8 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 export const importMap = {
   "./components/payload/VerificationActions.tsx#default": default_0e7f9e2c5737e1de76aab6448112c66b,
+  "/components/payload/customIcon/index.tsx#default": default_8e8c0661092bb71539daae0d0c543310,
+  "/components/payload/customLogo/index.tsx#default": default_2a4dc51cdaf353f16c5237db29c4e048,
   "./components/payload/BusinessCountWidget.tsx#default": default_3445dab61774ef8673ea5bc3beb90a9e,
   "./components/payload/VerificationCountWidget.tsx#default": default_debd091b8e3311d039ee215558b2dcfe,
   "./components/payload/DonorCountWidget.tsx#default": default_63c93d65463dfeaf1cdbc620f2dc44d9,

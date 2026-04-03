@@ -28,6 +28,12 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      graphics: {
+        Icon: "/components/payload/customIcon/index.tsx",
+        Logo: "/components/payload/customLogo/index.tsx",
+      },
+    },
     dashboard: {
       widgets: [
         {
@@ -62,7 +68,8 @@ export default buildConfig({
         },
         {
           slug: "thank-you-email",
-          Component: "./components/payload/ThankYouEmailWidget/index.tsx#default",
+          Component:
+            "./components/payload/ThankYouEmailWidget/index.tsx#default",
           minWidth: "small",
           maxWidth: "full",
         },

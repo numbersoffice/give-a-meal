@@ -1,0 +1,14 @@
+.wrapper {
+  padding: 2px;
+  background: #ffffff;
+  border-radius: 4px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wrapper svg {
+  fill: #111111;
+}
