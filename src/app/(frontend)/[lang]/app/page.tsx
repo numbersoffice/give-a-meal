@@ -46,7 +46,7 @@ export default async function Page({
         <Header title={hero.title} className={styles.header} variant={1} />
         <AppCard
           appStoreLink="https://apps.apple.com/app/id1631730593"
-          playStoreLink="https://play.google.com/store/apps/details?id=com.fotura.giveamealuser&pli=1"
+          playStoreLink="https://play.google.com/store/apps/details?id=com.numbersoffice.giveamealuser"
           className={styles.cardOne}
           title={apps[0].title}
           description={apps[0].sub}
@@ -54,7 +54,7 @@ export default async function Page({
         />
         <AppCard
           appStoreLink="https://apps.apple.com/app/id6449883589"
-          playStoreLink="https://play.google.com/store/apps/details?id=com.fotura.giveamealbusiness"
+          playStoreLink="https://play.google.com/store/apps/details?id=com.numbersoffice.giveamealbusiness"
           className={styles.cardTwo}
           title={apps[1].title}
           description={apps[1].sub}
