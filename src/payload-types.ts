@@ -235,6 +235,10 @@ export interface Business {
    */
   location: [number, number];
   inactive?: boolean | null;
+  /**
+   * Trusted business receive special permissions e.g. directly redeeming donations without inputting a pin.
+   */
+  trusted?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -649,6 +653,7 @@ export interface BusinessesSelect<T extends boolean = true> {
   country?: T;
   location?: T;
   inactive?: T;
+  trusted?: T;
   updatedAt?: T;
   createdAt?: T;
 }
