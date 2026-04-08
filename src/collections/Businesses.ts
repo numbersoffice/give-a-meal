@@ -107,5 +107,15 @@ export const Businesses: CollectionConfig = {
         position: "sidebar",
       },
     },
+    {
+      name: "trusted",
+      type: "checkbox",
+      defaultValue: false,
+      admin: {
+        position: "sidebar",
+        description:
+          "Trusted business receive special permissions e.g. directly redeeming donations without inputting a pin.",
+      },
+    },
   ],
 };
