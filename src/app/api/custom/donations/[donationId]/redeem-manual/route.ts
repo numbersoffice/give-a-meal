@@ -52,8 +52,6 @@ export async function POST(request: NextRequest) {
         ? donation.business.id
         : donation.business;
 
-    console.log(donationBusinessId);
-    console.log(businessId);
     if (String(donationBusinessId) !== String(businessId))
       throw new ApiError(404, "Donation not found at your business.");
 

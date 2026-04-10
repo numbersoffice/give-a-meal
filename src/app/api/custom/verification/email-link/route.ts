@@ -51,22 +51,39 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Create business
-    const business = await payload.create({
+    // Check if a business with this placeId already exists (reactivation case)
+    const { docs: existingBusinesses } = await payload.find({
       collection: "businesses",
-      data: {
-        placeId: verification.placeId!,
-        businessName: businessDetails.name,
-        address: businessDetails.address.address ?? "",
-        streetNumber: businessDetails.address.streetNumber ?? "",
-        city: businessDetails.address.city ?? "",
-        postalCode: businessDetails.address.postalCode ?? "",
-        state: businessDetails.address.state ?? "",
-        country: businessDetails.address.country ?? "",
-        location: [businessDetails.location.lng, businessDetails.location.lat],
-        inactive: false,
-      },
+      where: { placeId: { equals: verification.placeId! } },
+      limit: 1,
     });
+
+    let business;
+    if (existingBusinesses.length > 0) {
+      // Reactivate existing business
+      business = await payload.update({
+        collection: "businesses",
+        id: existingBusinesses[0].id,
+        data: { inactive: false },
+      });
+    } else {
+      // Create new business
+      business = await payload.create({
+        collection: "businesses",
+        data: {
+          placeId: verification.placeId!,
+          businessName: businessDetails.name,
+          address: businessDetails.address.address ?? "",
+          streetNumber: businessDetails.address.streetNumber ?? "",
+          city: businessDetails.address.city ?? "",
+          postalCode: businessDetails.address.postalCode ?? "",
+          state: businessDetails.address.state ?? "",
+          country: businessDetails.address.country ?? "",
+          location: [businessDetails.location.lng, businessDetails.location.lat],
+          inactive: false,
+        },
+      });
+    }
 
     // Find the business user linked to this verification and add the business
     const businessUserId = typeof verification.businessUser === "object"

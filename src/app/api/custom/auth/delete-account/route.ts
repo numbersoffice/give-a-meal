@@ -9,6 +9,12 @@ export async function DELETE(request: NextRequest) {
     const authData = await verifyAuth(request);
     const payload = await getPayload({ config });
 
+    const body = await request.json();
+    const { businessId: targetBusinessId } = body;
+    if (!targetBusinessId) {
+      throw new ApiError(400, "businessId is required.");
+    }
+
     // Find the authenticated business user
     const { docs } = await payload.find({
       collection: "businessUsers",
@@ -26,6 +32,11 @@ export async function DELETE(request: NextRequest) {
       typeof b === "object" ? b.id : b,
     );
     const allBusinessIds = [...new Set([...ownedIds, ...staffIds])];
+
+    // Verify the user is an owner or staff of the target business
+    if (!allBusinessIds.includes(targetBusinessId) && !allBusinessIds.includes(String(targetBusinessId))) {
+      throw new ApiError(403, "You are not an owner or staff member of this business.");
+    }
 
     // For each business, check ownership constraints
     for (const businessId of allBusinessIds) {
@@ -96,32 +107,29 @@ export async function DELETE(request: NextRequest) {
 
     // All checks passed — perform deletions
 
-    // Delete businesses where this user is the last member (and cascade their data)
-    for (const businessId of allBusinessIds) {
-      const { docs: otherMembers } = await payload.find({
-        collection: "businessUsers",
-        where: {
-          and: [
-            { id: { not_equals: user.id } },
-            {
-              or: [
-                { ownedBusinesses: { in: [businessId] } },
-                { staffBusinesses: { in: [businessId] } },
-              ],
-            },
-          ],
-        },
-        limit: 1,
-      });
+    // If this user is the last member of the target business, mark it as inactive
+    const { docs: otherMembersOfTarget } = await payload.find({
+      collection: "businessUsers",
+      where: {
+        and: [
+          { id: { not_equals: user.id } },
+          {
+            or: [
+              { ownedBusinesses: { in: [targetBusinessId] } },
+              { staffBusinesses: { in: [targetBusinessId] } },
+            ],
+          },
+        ],
+      },
+      limit: 1,
+    });
 
-      if (otherMembers.length === 0) {
-        // Mark the business as inactive instead of deleting it
-        await payload.update({
-          collection: "businesses",
-          id: businessId,
-          data: { inactive: true },
-        });
-      }
+    if (otherMembersOfTarget.length === 0) {
+      await payload.update({
+        collection: "businesses",
+        id: targetBusinessId,
+        data: { inactive: true },
+      });
     }
 
     // Nullify references to this user on remaining donations
