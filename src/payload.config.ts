@@ -15,6 +15,7 @@ import { Donations } from "./collections/Donations";
 import { Reservations } from "./collections/Reservations";
 import { Verifications } from "./collections/Verifications";
 import { VerificationKeys } from "./collections/VerificationKeys";
+import { SmsMessages } from "./collections/SmsMessages";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -95,6 +96,7 @@ export default buildConfig({
     Reservations,
     Verifications,
     VerificationKeys,
+    SmsMessages,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
@@ -125,6 +127,35 @@ export default buildConfig({
         handler: async ({ req }) => {
           let docs = null;
           try {
+            // Find expired reservations before deleting so we can notify SMS users
+            const { docs: expiredDocs } = await req.payload.find({
+              collection: "reservations",
+              where: {
+                expiresAt: {
+                  less_than: new Date(),
+                },
+              },
+            });
+
+            // Send SMS notifications for reservations made via phone number
+            if (expiredDocs.length > 0) {
+              const { sendSms } = await import("./lib/sms/twilio");
+              for (const reservation of expiredDocs) {
+                const deviceId = reservation.deviceId;
+                // Phone numbers start with "+"
+                if (deviceId && deviceId.startsWith("+")) {
+                  try {
+                    await sendSms(
+                      deviceId,
+                      "Your meal reservation has expired. Text us again to find another meal!",
+                    );
+                  } catch (err) {
+                    console.error(`Failed to send expiry SMS to ${deviceId}:`, err);
+                  }
+                }
+              }
+            }
+
             const { docs: _docs } = await req.payload.delete({
               collection: "reservations",
               where: {
@@ -157,11 +188,52 @@ export default buildConfig({
           },
         ],
       },
+      {
+        slug: "removeExpiredSmsMessages",
+        handler: async ({ req }) => {
+          let docs = null;
+          try {
+            const { docs: _docs } = await req.payload.delete({
+              collection: "sms-messages",
+              where: {
+                expiresAt: {
+                  less_than: new Date(),
+                },
+              },
+            });
+            docs = _docs;
+          } catch (err) {
+            console.log(err);
+          }
+
+          return {
+            output: {
+              deletedCount: docs?.length || 0,
+            },
+          };
+        },
+        schedule: [
+          {
+            cron: "*/5 * * * *",
+            queue: "sms",
+          },
+        ],
+        outputSchema: [
+          {
+            name: "deletedCount",
+            type: "number",
+          },
+        ],
+      },
     ],
     autoRun: [
       {
         cron: "* * * * *",
         queue: "reservations",
+      },
+      {
+        cron: "*/5 * * * *",
+        queue: "sms",
       },
     ],
   },

@@ -16,6 +16,7 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.94.0",
     "@formatjs/intl-localematcher": "^0.4.1",
     "@googlemaps/js-api-loader": "^1.16.2",
     "@payloadcms/db-mongodb": "^3.80.0",
@@ -42,7 +43,8 @@
     "react-fast-marquee": "^1.6.4",
     "react-hot-toast": "^2.4.1",
     "schema-dts": "^1.1.2",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "twilio": "^6.0.1"
   },
   "devDependencies": {
     "@types/google.maps": "^3.55.0",

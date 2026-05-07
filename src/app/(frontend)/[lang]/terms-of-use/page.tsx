@@ -32,7 +32,7 @@ export default async function PrivacyNotice({
           <p className="body">
             These Terms of Use constitute a legally binding agreement made
             between you, whether personally or on behalf of an entity (“you”)
-            and Fotura, Inc., doing business as Give A Meal (&quot;
+            and Numbers Office LLC, doing business as Give A Meal (&quot;
             <b>Give A Meal</b>,&quot; &quot;<b>we</b>
             ,&quot; &quot;<b>us</b>,&quot; or &quot;<b>our</b>&quot;),
             concerning your access to and use of the Give a Meal website as well
@@ -581,15 +581,15 @@ export default async function PrivacyNotice({
           <p className="body">
             In order to resolve a complaint regarding the Site or to receive
             further information regarding use of the Site, please email us at{" "}
-            <Link href="mailto:benner@fotura.co">benner@fotura.co</Link> or by
-            post to:
+            <Link href="mailto:max@give-a-meal.org">max@give-a-meal.org</Link>{" "}
+            or by post to:
           </p>
           <p className="body">
-            Fotura, Inc.
+            Numbers Office LLC
             <br />
-            9450 SW Gemini Dr
+            228 Park Ave S
             <br />
-            Beaverton, OR 97008
+            New York, NY 10003
             <br />
             United States
           </p>

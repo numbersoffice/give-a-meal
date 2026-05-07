@@ -78,6 +78,7 @@ export interface Config {
     reservations: Reservation;
     verifications: Verification;
     'verification-keys': VerificationKey;
+    'sms-messages': SmsMessage;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -95,6 +96,7 @@ export interface Config {
     reservations: ReservationsSelect<false> | ReservationsSelect<true>;
     verifications: VerificationsSelect<false> | VerificationsSelect<true>;
     'verification-keys': VerificationKeysSelect<false> | VerificationKeysSelect<true>;
+    'sms-messages': SmsMessagesSelect<false> | SmsMessagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -125,6 +127,7 @@ export interface Config {
   jobs: {
     tasks: {
       removeExpiredReservations: TaskRemoveExpiredReservations;
+      removeExpiredSmsMessages: TaskRemoveExpiredSmsMessages;
       inline: {
         input: unknown;
         output: unknown;
@@ -394,6 +397,19 @@ export interface VerificationKey {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sms-messages".
+ */
+export interface SmsMessage {
+  id: string;
+  phoneNumber: string;
+  role: 'user' | 'assistant';
+  content: string;
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -461,7 +477,7 @@ export interface PayloadJob {
     | {
         executedAt: string;
         completedAt: string;
-        taskSlug: 'inline' | 'removeExpiredReservations';
+        taskSlug: 'inline' | 'removeExpiredReservations' | 'removeExpiredSmsMessages';
         taskID: string;
         input?:
           | {
@@ -494,7 +510,7 @@ export interface PayloadJob {
         id?: string | null;
       }[]
     | null;
-  taskSlug?: ('inline' | 'removeExpiredReservations') | null;
+  taskSlug?: ('inline' | 'removeExpiredReservations' | 'removeExpiredSmsMessages') | null;
   queue?: string | null;
   waitUntil?: string | null;
   processing?: boolean | null;
@@ -552,6 +568,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'verification-keys';
         value: string | VerificationKey;
+      } | null)
+    | ({
+        relationTo: 'sms-messages';
+        value: string | SmsMessage;
       } | null);
   globalSlug?: string | null;
   user:
@@ -780,6 +800,18 @@ export interface VerificationKeysSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sms-messages_select".
+ */
+export interface SmsMessagesSelect<T extends boolean = true> {
+  phoneNumber?: T;
+  role?: T;
+  content?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -953,6 +985,16 @@ export interface CollectionsWidget {
  * via the `definition` "TaskRemoveExpiredReservations".
  */
 export interface TaskRemoveExpiredReservations {
+  input?: unknown;
+  output: {
+    deletedCount?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskRemoveExpiredSmsMessages".
+ */
+export interface TaskRemoveExpiredSmsMessages {
   input?: unknown;
   output: {
     deletedCount?: number | null;

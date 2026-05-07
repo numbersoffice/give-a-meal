@@ -29,7 +29,8 @@ export default async function PrivacyNotice({
           <div className={styles.spacer} />
 
           <p className="body">
-            This Cookie Policy explains how Fotura, Inc. (&quot;<b>Company</b>
+            This Cookie Policy explains how Numbers Office LLC (&quot;
+            <b>Company</b>
             &quot;, &quot;
             <b>we</b>&quot;, &quot;<b>us</b>&quot;, and &quot;<b>our</b>&quot;)
             uses cookies and similar technologies to recognize you when you use
@@ -54,14 +55,15 @@ export default async function PrivacyNotice({
             efficiently, as well as to provide reporting information.
           </p>
           <p className="body">
-            Cookies set by the website owner (in this case, Fotura, Inc.) are
-            called &quot;first party cookies&quot;. Cookies set by parties other
-            than the website owner are called &quot;third party cookies&quot;.
-            Third party cookies enable third party features or functionality to
-            be provided on or through the website (e.g. like advertising,
-            interactive content and analytics). The parties that set these third
-            party cookies can recognize your computer both when it visits the
-            website in question and also when it visits certain other websites.
+            Cookies set by the website owner (in this case, Numbers Office LLC)
+            are called &quot;first party cookies&quot;. Cookies set by parties
+            other than the website owner are called &quot;third party
+            cookies&quot;. Third party cookies enable third party features or
+            functionality to be provided on or through the website (e.g. like
+            advertising, interactive content and analytics). The parties that
+            set these third party cookies can recognize your computer both when
+            it visits the website in question and also when it visits certain
+            other websites.
           </p>
           <h5>Why do we use cookies?</h5>
           <p className="body">
@@ -248,14 +250,15 @@ export default async function PrivacyNotice({
           <p className="body">
             If you have any questions about our use of cookies or other
             technologies, please email us at{" "}
-            <Link href="benner@fotura.co">benner@fotura.co</Link> or by post to:
+            <Link href="max@give-a-meal.org">max@give-a-meal.org</Link> or by
+            post to:
           </p>
           <p className="body">
-            Fotura, Inc.
+            Numbers Office LLC
             <br />
-            9450 SW Gemini Dr
+            228 Park Ave S
             <br />
-            Beaverton, OR 97008
+            New York, NY 10003
             <br />
             United States
           </p>

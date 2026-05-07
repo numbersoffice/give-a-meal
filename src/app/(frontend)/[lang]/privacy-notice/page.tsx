@@ -29,15 +29,16 @@ export default async function PrivacyNotice({
           <div className={styles.spacer} />
 
           <p className="body">
-            Thank you for choosing to be part of our community at Fotura, Inc.,
-            doing business as Give A Meal (&quot;<b>Give A Meal</b>,&quot;
+            Thank you for choosing to be part of our community at Numbers Office
+            LLC, doing business as Give A Meal (&quot;<b>Give A Meal</b>,&quot;
             &quot;
             <b>we</b>,&quot; &quot;
             <b>us</b>,&quot; or &quot;<b>our</b>&quot;). We are committed to
             protecting your personal information and your right to privacy. If
             you have any questions or concerns about this privacy notice or our
             practices with regard to your personal information, please contact
-            us at <Link href="mailto:benner@fotura.co">benner@fotura.co</Link>.
+            us at{" "}
+            <Link href="mailto:max@give-a-meal.org">max@give-a-meal.org</Link>.
           </p>
           <p className="body">
             This privacy notice describes how we might use your information if
@@ -415,7 +416,7 @@ export default async function PrivacyNotice({
           <p className="body">
             If you have questions or comments about your privacy rights, you may
             email us at{" "}
-            <Link href="mailto:benner@fotura.co">benner@fotura.co</Link>.
+            <Link href="mailto:max@give-a-meal.org">max@give-a-meal.org</Link>.
           </p>
           <h5>Account Information</h5>
           <p className="body">
@@ -651,8 +652,9 @@ export default async function PrivacyNotice({
           </p>
           <p className="body">
             You may contact us by email at{" "}
-            <Link href="mailto:benner@fotura.co">benner@fotura.co</Link>, or by
-            referring to the contact details at the bottom of this document.
+            <Link href="mailto:max@give-a-meal.org">max@give-a-meal.org</Link>,
+            or by referring to the contact details at the bottom of this
+            document.
           </p>
           <p className="body">
             If you are using an authorized agent to exercise your right to
@@ -676,10 +678,11 @@ export default async function PrivacyNotice({
             &quot;selling&quot; of your personal data.
           </p>
           <p className="body">
-            Fotura, Inc. has not disclosed or sold any personal information to
-            third parties for a business or commercial purpose in the preceding
-            12 months. Fotura, Inc. will not sell personal information in the
-            future belonging to website visitors, users and other consumers.
+            Numbers Office LLC has not disclosed or sold any personal
+            information to third parties for a business or commercial purpose in
+            the preceding 12 months. Numbers Office LLC will not sell personal
+            information in the future belonging to website visitors, users and
+            other consumers.
           </p>
           <p className="body">
             <b>Your rights with respect to your personal data</b>
@@ -788,7 +791,7 @@ export default async function PrivacyNotice({
           </li>
           <p className="body">
             To exercise these rights, you can contact us by email at
-            benner@fotura.co, or by referring to the contact details at the
+            max@give-a-meal.org, or by referring to the contact details at the
             bottom of this document. If you have a complaint about how we handle
             your data, we would like to hear from you.{" "}
           </p>
@@ -812,15 +815,16 @@ export default async function PrivacyNotice({
           <h3 id="11">11. How can you contact us about this notice?</h3>
           <p className="body">
             If you have questions or comments about this notice, you may email
-            us at <Link href="mailto:benner@fotura.co">benner@fotura.co</Link>
+            us at{" "}
+            <Link href="mailto:max@give-a-meal.org">max@give-a-meal.org</Link>
              or by post to:
           </p>
           <p className="body">
-            Fotura, Inc.
+            Numbers Office LLC
             <br />
-            9450 SW Gemini Dr
+            228 Park Ave S
             <br />
-            Beaverton, OR 97008
+            New York, NY 10003
             <br />
             United States
           </p>

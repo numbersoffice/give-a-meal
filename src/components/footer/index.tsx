@@ -40,8 +40,8 @@ export default function Footer({
         </div>
         <p className="label">
           © {year}{" "}
-          <a target="empty" href="https://www.fotura.co">
-            Fotura, Inc.
+          <a target="empty" href="https://www.numbersoffice.com">
+            Numbers Office LLC
           </a>{" "}
           Illustrations by{" "}
           <a target="empty" href="https://www.giuliabnagle.com">
