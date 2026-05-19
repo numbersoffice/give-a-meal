@@ -162,10 +162,11 @@ export default async function PrivacyNotice({
             We do not send marketing or promotional messages over SMS and we
             do not initiate outbound SMS conversations. We only reply to
             people who have texted us first, so you will not receive any
-            messages from us unless you contact us. If you stop texting us,
-            we stop messaging you. Message and data rates may apply. Message
-            frequency is low and variable — messages are sent only in direct
-            response to your inquiry.
+            messages from us unless you contact us. You can opt out at any
+            time by replying <b>STOP</b> to any message from us, after which
+            we will no longer send you SMS messages. Message and data rates
+            may apply. Message frequency is low and variable — messages are
+            sent only in direct response to your inquiry.
           </p>
           <h5>Information automatically collected</h5>
           <p className="body">

@@ -566,12 +566,12 @@ export default async function PrivacyNotice({
             messages you send to or receive from us.
           </p>
           <p className="body">
-            <b>If you no longer wish to be contacted:</b> Because we only
-            reply to inbound messages, you can stop receiving messages from
-            us at any time simply by not texting us. If you have any
-            questions about our SMS Service or would like us to remove your
-            phone number and conversation history from our records, please
-            email us at{" "}
+            <b>Opting out:</b> You can opt out of the SMS Service at any
+            time by replying <b>STOP</b> to any message from us. After we
+            receive your STOP request, we will no longer send you SMS
+            messages. If you have any questions about our SMS Service or
+            would like us to remove your phone number and conversation
+            history from our records, please email us at{" "}
             <Link href="mailto:max@give-a-meal.org">max@give-a-meal.org</Link>
             .
           </p>
