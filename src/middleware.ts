@@ -19,7 +19,8 @@ const pathsWithoutLocale = [
   "/favicon.ico",
   "/sitemap.xml",
   "/robots.txt",
-  "/assets/"
+  "/assets/",
+  "/opt-in-policy.html"
 ];
 const protectedPaths = ["/donors/profile"];
 
