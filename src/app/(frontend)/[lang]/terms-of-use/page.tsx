@@ -23,7 +23,7 @@ export default async function PrivacyNotice({
         <div className={styles.container}>
           <div className={styles.titleContainer}>
             <h2>Terms of Use</h2>
-            <p className="body_s">Last updated Jul 18, 2023</p>
+            <p className="body_s">Last updated May 19, 2026</p>
           </div>
 
           <div className={styles.spacer} />
@@ -533,6 +533,60 @@ export default async function PrivacyNotice({
             to you for any loss or corruption of any such data, and you hereby
             waive any right of action against us arising from any such loss or
             corruption of such data.
+          </p>
+
+          <h3>SMS messaging</h3>
+          <p className="body">
+            We offer a conversational, customer-initiated text messaging
+            service (the &quot;<b>SMS Service</b>&quot;) that allows you to
+            text our published phone number to find and reserve nearby meals
+            and receive a 6-digit redemption code to show at the restaurant.
+            By texting our published phone number, you consent to receive a
+            reply from us at the mobile phone number you used to message us.
+            Your inbound message constitutes your consent to be contacted in
+            connection with that conversation.
+          </p>
+          <p className="body">
+            <b>Conversational, inbound-only use:</b> The SMS Service is
+            strictly conversational and customer-initiated. We do not send
+            unsolicited or promotional messages, we do not run marketing
+            campaigns over SMS, and we do not initiate outbound conversations
+            with people who have not first contacted us. We only reply to
+            people who have texted us first.
+          </p>
+          <p className="body">
+            <b>Message frequency:</b> Message frequency is low and variable.
+            Messages are sent only in direct response to your inquiry,
+            typically a handful of messages per conversation.
+          </p>
+          <p className="body">
+            <b>Message and data rates:</b> Message and data rates may apply.
+            Check with your mobile carrier for details about your plan. We
+            are not responsible for any charges from your carrier related to
+            messages you send to or receive from us.
+          </p>
+          <p className="body">
+            <b>If you no longer wish to be contacted:</b> Because we only
+            reply to inbound messages, you can stop receiving messages from
+            us at any time simply by not texting us. If you have any
+            questions about our SMS Service or would like us to remove your
+            phone number and conversation history from our records, please
+            email us at{" "}
+            <Link href="mailto:max@give-a-meal.org">max@give-a-meal.org</Link>
+            .
+          </p>
+          <p className="body">
+            <b>Carriers and SMS provider:</b> We use Twilio, Inc. as our SMS
+            service provider. Mobile carriers are not liable for delayed or
+            undelivered messages. Information you share with us via SMS is
+            handled in accordance with our{" "}
+            <Link href="./privacy-notice">Privacy Notice</Link>.
+          </p>
+          <p className="body">
+            <b>Eligibility:</b> To use the SMS Service, you must be the
+            account holder of, or have authority to use, the mobile phone
+            number you text us from, and you must be of legal age in your
+            jurisdiction.
           </p>
 
           <h3>Electronic communications, transactions, and signatures</h3>

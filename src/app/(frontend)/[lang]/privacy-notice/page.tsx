@@ -23,7 +23,7 @@ export default async function PrivacyNotice({
         <div className={styles.container}>
           <div className={styles.titleContainer}>
             <h2>Privacy Notice</h2>
-            <p className="body_s">Last updated Jul 18, 2023</p>
+            <p className="body_s">Last updated May 19, 2026</p>
           </div>
 
           <div className={styles.spacer} />
@@ -53,6 +53,11 @@ export default async function PrivacyNotice({
               </Link>
             </li>
             <li>Use our iOS or Android app</li>
+            <li>
+              Text our published phone number to find and reserve nearby meals
+              and receive a 6-digit redemption code to show at the restaurant
+              (our &quot;<b>SMS Service</b>&quot;)
+            </li>
             <li>
               Engage with us in other related ways ― including any sales,
               marketing, or events
@@ -127,6 +132,41 @@ export default async function PrivacyNotice({
           </ol>
 
           <h3 id="1">1. What information fo we collect?</h3>
+          <h5>Information you provide via our SMS Service</h5>
+          <p className="body">
+            <b>In Short:</b> When you text our published phone number, we
+            receive your mobile phone number and the content of the messages
+            you send us so that we can help you find and reserve nearby meals
+            and deliver your 6-digit redemption code.
+          </p>
+          <p className="body">
+            If you initiate a conversation with us by texting our published
+            phone number, we collect:
+          </p>
+          <ul>
+            <li>
+              <i>Your mobile phone number,</i> which we use to identify your
+              conversation, send replies, and issue your meal reservation code.
+            </li>
+            <li>
+              <i>Message content,</i> including any information you choose to
+              share with us such as your approximate location or neighborhood,
+              dietary needs, or the meal you would like to reserve.
+            </li>
+            <li>
+              <i>Conversation metadata,</i> such as timestamps and message
+              delivery status reported by our SMS provider.
+            </li>
+          </ul>
+          <p className="body">
+            We do not send marketing or promotional messages over SMS and we
+            do not initiate outbound SMS conversations. We only reply to
+            people who have texted us first, so you will not receive any
+            messages from us unless you contact us. If you stop texting us,
+            we stop messaging you. Message and data rates may apply. Message
+            frequency is low and variable — messages are sent only in direct
+            response to your inquiry.
+          </p>
           <h5>Information automatically collected</h5>
           <p className="body">
             <b>In Short:</b> Some information — such as your Internet Protocol
@@ -260,6 +300,12 @@ export default async function PrivacyNotice({
               use your information to respond to your inquiries and solve any
               potential issues you might have with the use of our Services.
             </li>
+            <li>
+              <b>To operate our SMS Service.</b> We use your mobile phone
+              number and message content to reply to inbound text messages,
+              help you find and reserve nearby meals, and deliver your
+              6-digit redemption code.
+            </li>
           </ul>
 
           <h3 id="3">3. Will your information be shared with anyone?</h3>
@@ -331,6 +377,17 @@ export default async function PrivacyNotice({
               services if given explicit consent by you. To find out more about
               Expo’s Privacy Policy, please refer to this{" "}
               <Link href="https://expo.dev/privacy">link</Link>.
+            </li>
+            <li>
+              <b>Twilio.</b> We use Twilio, Inc. as our SMS service provider
+              to transmit and receive text messages exchanged through our SMS
+              Service. Twilio processes your mobile phone number and the
+              content of your messages on our behalf in order to deliver them.
+              Information shared with Twilio for SMS purposes is not shared
+              with any other third party for their marketing or promotional
+              purposes. To learn more about Twilio&#39;s privacy practices,
+              please refer to this{" "}
+              <Link href="https://www.twilio.com/legal/privacy">link</Link>.
             </li>
           </ul>
 
