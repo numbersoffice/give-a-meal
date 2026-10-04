@@ -12,6 +12,14 @@ export async function GET(request: NextRequest) {
 
     const payload = await getPayload({ config });
 
+    // Must stay reachable without a token: the business app polls it during
+    // email verification, before the user can sign in. Only the account owner
+    // gets their profile back; anonymous callers get the status fields only.
+    const { user: authUser } = await payload.auth({ headers: request.headers });
+    const isSelf =
+      authUser?.collection === "businessUsers" &&
+      authUser.email.toLowerCase() === email.toLowerCase();
+
     // Check if user has a business user profile with business affiliations
     const { docs: users } = await payload.find({
       collection: "businessUsers",
@@ -31,20 +39,10 @@ export async function GET(request: NextRequest) {
         // Rework this logic to make it more resilient and prepare for multiple roles in the future
         const connectionType = ownedBusinesses.length > 0 ? "admin" : "user";
 
-        console.log({
-          verificationStatus: "full",
-          business: businessObj,
-          profile: user,
-          verification: {
-            verificationMode: null,
-            connectionType,
-          },
-        })
-
         return NextResponse.json({
           verificationStatus: "full",
           business: businessObj,
-          profile: user,
+          profile: isSelf ? user : null,
           verification: {
             verificationMode: null,
             connectionType,
