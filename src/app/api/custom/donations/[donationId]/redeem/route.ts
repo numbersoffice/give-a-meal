@@ -49,6 +49,10 @@ export async function POST(
     const item = typeof donation.item === "object" ? donation.item : null;
     const business = typeof donation.business === "object" ? donation.business : null;
 
+    const donationBusinessId = business ? business.id : donation.business;
+    if (String(donationBusinessId) !== String(businessId))
+      throw new ApiError(404, "Donation not found at your business.");
+
     // Redeem the donation
     const redeemed = await payload.update({
       collection: "donations",
