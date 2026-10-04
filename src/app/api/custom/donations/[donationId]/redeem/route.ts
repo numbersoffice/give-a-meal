@@ -1,7 +1,7 @@
 import { verifyAuth, verifyBusinessMembership, errorResponse, ApiError } from "@/lib/api/middleware";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import donationClaimedTemplate from "@/components/emailTemplates/donationClaimed";
+import { sendDonationPickedUpEmail } from "@/lib/api/donations";
 import { sendNotifications } from "@/lib/api/notifications";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -46,7 +46,6 @@ export async function POST(
       depth: 2,
     });
 
-    const item = typeof donation.item === "object" ? donation.item : null;
     const business = typeof donation.business === "object" ? donation.business : null;
 
     const donationBusinessId = business ? business.id : donation.business;
@@ -71,32 +70,7 @@ export async function POST(
 
     sendNotifications(businessId, "donation_removed", user.id);
 
-    // Send notification to donor if there's a donor email
-    try {
-      if (donation.donorName && item) {
-        // Look up donor by name to get email — best effort
-        const { docs: donors } = await payload.find({
-          collection: "donors",
-          where: { firstName: { equals: donation.donorName } },
-          limit: 1,
-        });
-        if (donors.length > 0 && donors[0].email) {
-          const template = donationClaimedTemplate({
-            businessName: business?.businessName ?? "",
-            donationName: item?.title ?? "",
-            donorProfileUrl: `https://give-a-meal.org/donors/profile?pe=${donors[0].email}`,
-          });
-          await payload.sendEmail({
-            to: donors[0].email,
-            subject: "Somebody has picked up your donation!",
-            text: template.text,
-            html: template.html,
-          });
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    await sendDonationPickedUpEmail(donation);
 
     return NextResponse.json(redeemed);
   } catch (error) {
