@@ -12,13 +12,18 @@ export async function POST(request: NextRequest) {
 
     if (!placeId) throw new ApiError(400, "Missing parameter placeId.");
     if (!emailName) throw new ApiError(400, "Missing parameter emailName.");
+    // emailName becomes the recipient's local part; anything else (e.g. "a@b.com, x")
+    // would let the caller add their own address to the verification email.
+    const localPart = typeof emailName === "string" ? emailName.trim() : "";
+    if (!/^[A-Za-z0-9._%+-]+$/.test(localPart))
+      throw new ApiError(400, "Invalid parameter emailName.");
 
     const details: any = await getBusinessDetailsFromGoogle(placeId);
     if (!details || !details.website)
       throw new ApiError(503, "Failed to fetch business details.");
 
     const domain = new URL(details.website).host.replace("www.", "");
-    const emailAddress = emailName + "@" + domain;
+    const emailAddress = localPart + "@" + domain;
 
     const payload = await getPayload({ config });
 
@@ -65,7 +70,7 @@ export async function POST(request: NextRequest) {
     const verificationBaseUrl = process.env.VERIFICATION_URL || `${request.nextUrl.origin}/api/custom/verification/email-link`;
     const verificationURL = `${verificationBaseUrl}?key=${verificationKey}`;
     await payload.sendEmail({
-      to: "maxibenner@gmail.com"/*emailAddress*/,
+      to: emailAddress,
       subject: "Verify your business on Give a Meal",
       text: `Hi, please verify ${details.name} by visiting: ${verificationURL}`,
       html: `<h1>Verify your business</h1><p>Hi, please verify <strong>${details.name}</strong> on Give a Meal by clicking the link below.</p><p><a href="${verificationURL}">Verify your business</a></p>`,
