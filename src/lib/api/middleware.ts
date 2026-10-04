@@ -1,4 +1,4 @@
-import { getPayload } from "payload";
+import { APIError, getPayload } from "payload";
 import config from "@payload-config";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -84,7 +84,11 @@ export function errorResponse(error: unknown) {
       { status: error.status },
     );
   }
-  const message =
-    error instanceof Error ? error.message : "Internal server error";
-  return NextResponse.json({ error: message }, { status: 500 });
+  // Payload marks errors that are safe to show (validation, not found, …) as
+  // public. Anything else may carry database internals, so only log it.
+  if (error instanceof APIError && error.isPublic) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+  console.error(error);
+  return NextResponse.json({ error: "Internal server error" }, { status: 500 });
 }
