@@ -10,12 +10,22 @@ import { sendNotifications } from "@/lib/api/notifications";
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import donationReceivedTemplate from "@/components/emailTemplates/donationReceived";
+import { toPublicDonation } from "@/lib/api/donations";
 
 // getDonationsFromBusiness
 export async function GET(request: NextRequest) {
   try {
     const businessId = request.nextUrl.searchParams.get("businessId")!;
     const isActiveParam = request.nextUrl.searchParams.get("isActive");
+
+    // This route must stay open: the meal-finder app calls it without a token.
+    // Members of the business get the full documents, everyone else gets them
+    // without staff/donor personal data.
+    let isMember = false;
+    try {
+      await verifyBusinessMembership(await verifyAuth(request), businessId);
+      isMember = true;
+    } catch {}
 
     const payload = await getPayload({ config });
 
@@ -53,7 +63,7 @@ export async function GET(request: NextRequest) {
     );
 
     const docsWithReserved = docs.map((d) => ({
-      ...d,
+      ...(isMember ? d : toPublicDonation(d)),
       reserved: reservedDonationIds.has(d.id),
     }));
 

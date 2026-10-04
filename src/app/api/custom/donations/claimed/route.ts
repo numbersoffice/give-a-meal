@@ -2,6 +2,7 @@ import { errorResponse, ApiError } from "@/lib/api/middleware";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { NextRequest, NextResponse } from "next/server";
+import { toPublicDonation } from "@/lib/api/donations";
 
 // listClaimedDonations
 export async function GET(request: NextRequest) {
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest) {
         return rDonationId === d.id;
       });
       return {
-        ...d,
+        ...toPublicDonation(d),
         pin: reservation?.pin,
         reservationId: reservation?.id,
         expiresAt: reservation?.expiresAt,

@@ -13,7 +13,8 @@ export async function GET() {
         collection: "donations",
         sort: "-createdAt",
         limit: 5,
-        depth: 2,
+        depth: 1,
+        select: { item: true, business: true, createdAt: true },
       }),
       payload.find({
         collection: "businesses",
