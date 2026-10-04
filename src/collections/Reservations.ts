@@ -22,6 +22,7 @@ export const Reservations: CollectionConfig = {
       type: "relationship",
       relationTo: "donations",
       required: true,
+      unique: true,
     },
     {
       name: "deviceId",

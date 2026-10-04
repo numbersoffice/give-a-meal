@@ -1,4 +1,4 @@
-import { getPayload } from "payload";
+import { getPayload, ValidationError } from "payload";
 import config from "@payload-config";
 import type { Tool } from "@anthropic-ai/sdk/resources/messages";
 
@@ -271,15 +271,25 @@ async function claimMeal(
   const pin = generatePin();
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-  await payload.create({
-    collection: "reservations",
-    data: {
-      donation: donationId,
-      deviceId: phoneNumber,
-      pin,
-      expiresAt,
-    },
-  });
+  try {
+    await payload.create({
+      collection: "reservations",
+      data: {
+        donation: donationId,
+        deviceId: phoneNumber,
+        pin,
+        expiresAt,
+      },
+    });
+  } catch (error) {
+    // Unique index on `reservations.donation`: someone claimed it concurrently
+    if (error instanceof ValidationError) {
+      return JSON.stringify({
+        error: "This meal has already been claimed by someone else.",
+      });
+    }
+    throw error;
+  }
 
   const business = donation.business as any;
   const businessName = business?.address || "the restaurant";

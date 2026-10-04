@@ -1,7 +1,23 @@
 import { errorResponse } from "@/lib/api/middleware";
-import { getPayload } from "payload";
+import { isPhoneDeviceId } from "@/lib/api/donations";
+import { createRateLimiter } from "@/lib/api/rateLimit";
+import { getPayload, ValidationError } from "payload";
 import config from "@payload-config";
 import { NextRequest, NextResponse } from "next/server";
+
+// Successful claims per IP. Kept generous because many phones can share one
+// carrier IP; the per-device cap below is the real limit for normal users.
+const claimLimiter = createRateLimiter(20, 60 * 60 * 1000);
+
+const alreadyClaimedResponse = () =>
+  NextResponse.json({
+    error: {
+      message: "Claim failed",
+      details: "This donation has already been claimed.",
+      hint: "Either you or someone else has already claimed this meal.",
+      code: 500,
+    },
+  }, { status: 500 });
 
 function generatePin(): string {
   return String(Math.floor(100000 + Math.random() * 900000));
@@ -26,6 +42,28 @@ export async function POST(
           code: 400,
         },
       }, { status: 400 });
+    }
+
+    if (isPhoneDeviceId(storageId)) {
+      return NextResponse.json({
+        error: {
+          message: "Invalid storage id",
+          details: "The provided storage id is not valid.",
+          hint: "",
+          code: 400,
+        },
+      }, { status: 400 });
+    }
+
+    if (claimLimiter.isLimited(request)) {
+      return NextResponse.json({
+        error: {
+          message: "Too many requests",
+          details: "Too many meals were reserved from this network. Please try again later.",
+          hint: "",
+          code: 429,
+        },
+      }, { status: 429 });
     }
 
     const payload = await getPayload({ config });
@@ -71,16 +109,7 @@ export async function POST(
       where: { donation: { equals: donationId } },
     });
 
-    if (existingReservations > 0) {
-      return NextResponse.json({
-        error: {
-          message: "Claim failed",
-          details: "This donation has already been claimed.",
-          hint: "Either you or someone else has already claimed this meal.",
-          code: 500,
-        },
-      }, { status: 500 });
-    }
+    if (existingReservations > 0) return alreadyClaimedResponse();
 
     // Check donation hasn't been redeemed
     if (donation.redeemedAt) {
@@ -97,15 +126,24 @@ export async function POST(
     const pin = generatePin();
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
-    await payload.create({
-      collection: "reservations",
-      data: {
-        donation: donationId,
-        deviceId: storageId,
-        pin,
-        expiresAt,
-      },
-    });
+    // The check above can race with a concurrent claim; the unique index on
+    // `reservations.donation` makes sure only one of them gets created.
+    try {
+      await payload.create({
+        collection: "reservations",
+        data: {
+          donation: donationId,
+          deviceId: storageId,
+          pin,
+          expiresAt,
+        },
+      });
+    } catch (error) {
+      if (error instanceof ValidationError) return alreadyClaimedResponse();
+      throw error;
+    }
+
+    claimLimiter.hit(request);
 
     return NextResponse.json({
       data: {
