@@ -68,6 +68,10 @@ export const BusinessUsers: CollectionConfig = {
       relationTo: "businesses",
       hasMany: true,
       label: "Businesses (Owner)",
+      access: {
+        create: ({ req }) => req.user?.collection === "users",
+        update: ({ req }) => req.user?.collection === "users",
+      },
     },
     {
       name: "staffBusinesses",
@@ -75,6 +79,10 @@ export const BusinessUsers: CollectionConfig = {
       relationTo: "businesses",
       hasMany: true,
       label: "Businesses (Staff)",
+      access: {
+        create: ({ req }) => req.user?.collection === "users",
+        update: ({ req }) => req.user?.collection === "users",
+      },
     },
   ],
 };
