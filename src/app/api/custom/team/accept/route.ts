@@ -17,13 +17,12 @@ export async function POST(request: NextRequest) {
     const payload = await getPayload({ config });
 
     // Get verification entry
-    const verification = await payload.findByID({
-      collection: "verifications",
-      id: verificationId,
-    });
+    const verification = await payload
+      .findByID({ collection: "verifications", id: verificationId, depth: 0 })
+      .catch(() => null);
 
-    if (!verification)
-      throw new ApiError(500, "Verification entry not found.");
+    if (!verification || String(verification.business) !== String(businessId))
+      throw new ApiError(404, "Verification entry not found.");
 
     // Find or create business user
     const { docs: existingUsers } = await payload.find({

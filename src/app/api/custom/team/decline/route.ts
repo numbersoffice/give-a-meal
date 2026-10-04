@@ -17,16 +17,14 @@ export async function POST(request: NextRequest) {
     const payload = await getPayload({ config });
 
     // Get verification before deleting (for email)
-    let verificationEmail: string | undefined;
-    try {
-      const verification = await payload.findByID({
-        collection: "verifications",
-        id: verificationId,
-      });
-      verificationEmail = verification.verificationEmail ?? undefined;
-    } catch {
-      // Continue even if not found
-    }
+    const verification = await payload
+      .findByID({ collection: "verifications", id: verificationId, depth: 0 })
+      .catch(() => null);
+
+    if (!verification || String(verification.business) !== String(businessId))
+      throw new ApiError(404, "Verification entry not found.");
+
+    const verificationEmail = verification.verificationEmail ?? undefined;
 
     await payload.delete({
       collection: "verifications",
