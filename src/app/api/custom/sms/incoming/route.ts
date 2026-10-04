@@ -10,6 +10,11 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY || "",
 });
 
+// Upper bound on Claude round-trips per inbound message
+const MAX_TOOL_ROUNDS = 5;
+const FALLBACK_REPLY =
+  "Sorry, I couldn't finish that request. Please try again.";
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
@@ -58,7 +63,9 @@ export async function POST(request: NextRequest) {
     });
 
     // Process tool calls in a loop until we get a final text response
-    while (response.stop_reason === "tool_use") {
+    let toolRounds = 0;
+    while (response.stop_reason === "tool_use" && toolRounds < MAX_TOOL_ROUNDS) {
+      toolRounds++;
       const toolUseBlocks = response.content.filter(
         (block) => block.type === "tool_use",
       );
@@ -103,10 +110,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Extract final text response
-    const replyText = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === "text")
-      .map((block) => block.text)
-      .join("\n");
+    const replyText =
+      response.stop_reason === "tool_use"
+        ? FALLBACK_REPLY
+        : response.content
+            .filter((block): block is Anthropic.TextBlock => block.type === "text")
+            .map((block) => block.text)
+            .join("\n");
 
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
