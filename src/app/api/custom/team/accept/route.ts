@@ -24,36 +24,28 @@ export async function POST(request: NextRequest) {
     if (!verification || String(verification.business) !== String(businessId))
       throw new ApiError(404, "Verification entry not found.");
 
-    // Find or create business user
+    // The requester registered (with a password) before sending the request
     const { docs: existingUsers } = await payload.find({
       collection: "businessUsers",
       where: { email: { equals: verification.verificationEmail } },
       limit: 1,
     });
 
-    let businessUser;
-    if (existingUsers.length > 0) {
-      businessUser = existingUsers[0];
-      // Add business to their staffBusinesses
-      const currentStaff = ((businessUser.staffBusinesses as any[]) ?? []).map(
-        (b: any) => (typeof b === "object" ? b.id : b)
-      );
-      await payload.update({
-        collection: "businessUsers",
-        id: businessUser.id,
-        data: {
-          staffBusinesses: [...currentStaff, businessId],
-        },
-      });
-    } else {
-      businessUser = await payload.create({
-        collection: "businessUsers",
-        data: {
-          email: verification.verificationEmail!,
-          staffBusinesses: [businessId],
-        },
-      });
-    }
+    if (existingUsers.length === 0)
+      throw new ApiError(404, "The user who sent this request no longer exists.");
+
+    // Add business to their staffBusinesses
+    const businessUser = existingUsers[0];
+    const currentStaff = ((businessUser.staffBusinesses as any[]) ?? []).map(
+      (b: any) => (typeof b === "object" ? b.id : b)
+    );
+    await payload.update({
+      collection: "businessUsers",
+      id: businessUser.id,
+      data: {
+        staffBusinesses: [...currentStaff, businessId],
+      },
+    });
 
     // Delete verification entry
     await payload.delete({

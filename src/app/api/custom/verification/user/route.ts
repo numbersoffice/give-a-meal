@@ -24,22 +24,14 @@ export async function POST(request: NextRequest) {
     if (!business)
       throw new ApiError(500, "We had a problem adding the verification entry.");
 
-    // Find or create business user for the requester
     const { docs: existingUsers } = await payload.find({
       collection: "businessUsers",
-      where: { email: { equals: authData.email } },
+      where: { id: { equals: authData.uid } },
       limit: 1,
     });
 
-    let businessUser;
-    if (existingUsers.length > 0) {
-      businessUser = existingUsers[0];
-    } else {
-      businessUser = await payload.create({
-        collection: "businessUsers",
-        data: { email: authData.email },
-      });
-    }
+    if (existingUsers.length === 0) throw new ApiError(404, "User not found.");
+    const businessUser = existingUsers[0];
 
     // Create verification entry
     const verification = await payload.create({

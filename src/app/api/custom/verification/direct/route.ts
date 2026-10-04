@@ -25,6 +25,15 @@ export async function POST(request: NextRequest) {
 
     const payload = await getPayload({ config });
 
+    const { docs: existingUsers } = await payload.find({
+      collection: "businessUsers",
+      where: { id: { equals: authData.uid } },
+      limit: 1,
+    });
+
+    if (existingUsers.length === 0) throw new ApiError(404, "User not found.");
+    const businessUser = existingUsers[0];
+
     // Check if a business with this placeId already exists (reactivation case)
     const { docs: existingBusinesses } = await payload.find({
       collection: "businesses",
@@ -57,35 +66,16 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Find or create business user
-    const { docs: existingUsers } = await payload.find({
+    const currentOwned = ((businessUser.ownedBusinesses as any[]) ?? []).map(
+      (b: any) => (typeof b === "object" ? b.id : b)
+    );
+    const updatedUser = await payload.update({
       collection: "businessUsers",
-      where: { email: { equals: authData.email } },
-      limit: 1,
+      id: businessUser.id,
+      data: { ownedBusinesses: [...currentOwned, business.id] },
     });
 
-    let businessUser;
-    if (existingUsers.length > 0) {
-      businessUser = existingUsers[0];
-      const currentOwned = ((businessUser.ownedBusinesses as any[]) ?? []).map(
-        (b: any) => (typeof b === "object" ? b.id : b)
-      );
-      businessUser = await payload.update({
-        collection: "businessUsers",
-        id: businessUser.id,
-        data: { ownedBusinesses: [...currentOwned, business.id] },
-      });
-    } else {
-      businessUser = await payload.create({
-        collection: "businessUsers",
-        data: {
-          email: authData.email,
-          ownedBusinesses: [business.id],
-        },
-      });
-    }
-
-    return NextResponse.json({ business, profile: businessUser });
+    return NextResponse.json({ business, profile: updatedUser });
   } catch (error) {
     return errorResponse(error);
   }
