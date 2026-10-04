@@ -28,6 +28,9 @@ export async function GET(request: NextRequest) {
     const response = await fetch(url);
     const googlePlaces: any = await response.json();
 
+    if (!Array.isArray(googlePlaces?.results))
+      throw new ApiError(503, "Business search is currently unavailable.");
+
     const placeIds: string[] = googlePlaces.results.map(
       (place: any) => place.place_id
     );
