@@ -50,6 +50,24 @@ export const Verifications: CollectionConfig = {
           );
         }
 
+        // Grant ownership to the requester. verificationEmail can't be used for
+        // this: for email-mode requests it holds the business's own address.
+        const businessUserId =
+          typeof verification.businessUser === "object"
+            ? verification.businessUser.id
+            : verification.businessUser;
+
+        const grantee = await req.payload
+          .findByID({ collection: "businessUsers", id: businessUserId })
+          .catch(() => null);
+
+        if (!grantee) {
+          return Response.json(
+            { error: "The business user who requested this no longer exists" },
+            { status: 404 },
+          );
+        }
+
         const details = await getBusinessDetailsFromGoogle(
           verification.placeId!,
         );
@@ -95,27 +113,18 @@ export const Verifications: CollectionConfig = {
           });
         }
 
-        // Find the business user and append to ownedBusinesses
-        const { docs: existingUsers } = await req.payload.find({
-          collection: "businessUsers",
-          where: { email: { equals: verification.verificationEmail } },
-          limit: 1,
-        });
-
-        let businessUser;
-        if (existingUsers.length > 0) {
-          const currentOwned = (
-            (existingUsers[0].ownedBusinesses as any[]) ?? []
-          ).map((b: any) => (typeof b === "object" ? b.id : b));
-          if (!currentOwned.includes(business.id)) {
-            currentOwned.push(business.id);
-          }
-          businessUser = await req.payload.update({
-            collection: "businessUsers",
-            id: existingUsers[0].id,
-            data: { ownedBusinesses: currentOwned },
-          });
+        // Append to the requester's ownedBusinesses
+        const currentOwned = ((grantee.ownedBusinesses as any[]) ?? []).map(
+          (b: any) => (typeof b === "object" ? b.id : b),
+        );
+        if (!currentOwned.includes(business.id)) {
+          currentOwned.push(business.id);
         }
+        const businessUser = await req.payload.update({
+          collection: "businessUsers",
+          id: grantee.id,
+          data: { ownedBusinesses: currentOwned },
+        });
 
         await req.payload.delete({
           collection: "verifications",
