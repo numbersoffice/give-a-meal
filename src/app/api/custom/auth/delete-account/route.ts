@@ -38,6 +38,9 @@ export async function DELETE(request: NextRequest) {
       throw new ApiError(403, "You are not an owner or staff member of this business.");
     }
 
+    // Businesses this user is the last member of; deactivated below
+    const orphanedBusinessIds: string[] = [];
+
     // For each business, check ownership constraints
     for (const businessId of allBusinessIds) {
       // Find all other owners of this business (excluding the current user)
@@ -85,6 +88,8 @@ export async function DELETE(request: NextRequest) {
 
       // If this user is the last member of the business, we need to check for unredeemed donations
       if (isLastMember) {
+        orphanedBusinessIds.push(businessId);
+
         const { totalDocs: unredeemedCount } = await payload.find({
           collection: "donations",
           where: {
@@ -107,27 +112,11 @@ export async function DELETE(request: NextRequest) {
 
     // All checks passed — perform deletions
 
-    // If this user is the last member of the target business, mark it as inactive
-    const { docs: otherMembersOfTarget } = await payload.find({
-      collection: "businessUsers",
-      where: {
-        and: [
-          { id: { not_equals: user.id } },
-          {
-            or: [
-              { ownedBusinesses: { in: [targetBusinessId] } },
-              { staffBusinesses: { in: [targetBusinessId] } },
-            ],
-          },
-        ],
-      },
-      limit: 1,
-    });
-
-    if (otherMembersOfTarget.length === 0) {
+    // Deactivate every business left without members, not just the target one
+    for (const businessId of orphanedBusinessIds) {
       await payload.update({
         collection: "businesses",
-        id: targetBusinessId,
+        id: businessId,
         data: { inactive: true },
       });
     }
