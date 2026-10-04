@@ -1,13 +1,14 @@
+import crypto from "crypto";
+
 export function generateRandomString() {
-  let result = "";
-  for (let j = 0; j < 32; j++) {
-    if (j == 8 || j == 12 || j == 16 || j == 20) result = result + "-";
-    const i = Math.floor(Math.random() * 16)
-      .toString(16)
-      .toUpperCase();
-    result = result + i;
-  }
-  return result;
+  const hex = crypto.randomBytes(16).toString("hex").toUpperCase();
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    hex.slice(12, 16),
+    hex.slice(16, 20),
+    hex.slice(20),
+  ].join("-");
 }
 
 export function keysToCamel(o: any): any {

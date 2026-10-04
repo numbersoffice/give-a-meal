@@ -3,6 +3,7 @@ import { isPhoneDeviceId } from "@/lib/api/donations";
 import { createRateLimiter } from "@/lib/api/rateLimit";
 import { getPayload, ValidationError } from "payload";
 import config from "@payload-config";
+import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 
 // Successful claims per IP. Kept generous because many phones can share one
@@ -20,7 +21,7 @@ const alreadyClaimedResponse = () =>
   }, { status: 500 });
 
 function generatePin(): string {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  return String(crypto.randomInt(100000, 1000000));
 }
 
 // claimDonation
