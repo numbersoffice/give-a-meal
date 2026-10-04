@@ -23,3 +23,11 @@ export function toPublicDonation<T extends Donation>(donation: T) {
         : donatedBy,
   };
 }
+
+/**
+ * Reservations made over SMS store the claimant's phone number (E.164, e.g.
+ * "+15551234567") as `deviceId`; the app always uses a random uuid. Public
+ * endpoints keyed on a device id must refuse phone numbers, otherwise anyone who
+ * knows a number could read its PINs or claim meals in its name.
+ */
+export const isPhoneDeviceId = (deviceId: string) => deviceId.startsWith("+");
