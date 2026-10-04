@@ -2,10 +2,15 @@ import { errorResponse, ApiError } from "@/lib/api/middleware";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { NextRequest, NextResponse } from "next/server";
+import { createRateLimiter } from "@/lib/api/rateLimit";
+
+const limiter = createRateLimiter(120, 10 * 60 * 1000);
 
 // listBusinesses
 export async function GET(request: NextRequest) {
   try {
+    if (limiter.consume(request)) throw new ApiError(429, "Too many requests.");
+
     const businessName = request.nextUrl.searchParams.get("businessName");
     const lat = request.nextUrl.searchParams.get("lat");
     const lon = request.nextUrl.searchParams.get("lon");
