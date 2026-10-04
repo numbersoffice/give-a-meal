@@ -1,4 +1,7 @@
 import getProxyOrigin from "@/utils/getProxyOrigin";
+import { verifyMagicLinkToken } from "@/lib/auth/magicLink";
+import { getPayload } from "payload";
+import config from "@payload-config";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -11,18 +14,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Delegate to the Payload collection endpoint
-    const verifyRes = await fetch(`${origin}/api/donors/magic-link/verify`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token }),
-    });
+    const payload = await getPayload({ config });
+    const loginResult = await verifyMagicLinkToken(payload, token);
 
-    if (!verifyRes.ok) {
+    if (!loginResult?.token) {
       return NextResponse.redirect(`${origin}/${lang}/donors/login`);
     }
 
-    const { token: jwt } = await verifyRes.json();
+    const jwt = loginResult.token;
 
     // Set the JWT as a cookie and redirect to profile
     const response = NextResponse.redirect(

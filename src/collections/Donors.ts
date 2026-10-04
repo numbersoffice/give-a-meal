@@ -1,5 +1,6 @@
 import magicLinkLoginTemplate from "@/components/emailTemplates/magicLinkLogin";
 import { magicLinkStrategy } from "@/strategies/magic-link";
+import { verifyMagicLinkToken } from "@/lib/auth/magicLink";
 import type { CollectionConfig } from "payload";
 import crypto from "crypto";
 
@@ -108,48 +109,14 @@ export const Donors: CollectionConfig = {
             ? await req.json()
             : { token: undefined };
 
-        const { docs } = await req.payload.find({
-          collection: "donors",
-          where: {
-            magicLinkToken: { equals: token },
-            magicLinkExpiry: { greater_than: new Date().toISOString() },
-          },
-          limit: 1,
-        });
+        const loginResult = await verifyMagicLinkToken(req.payload, token, req);
 
-        if (!docs.length) {
+        if (!loginResult) {
           return new Response(
             JSON.stringify({ error: "Invalid or expired token" }),
             { status: 400 },
           );
         }
-
-        const user = docs[0];
-        const tempPassword = crypto.randomBytes(32).toString("hex");
-
-        // Set a temporary password, login with it, then randomize it again
-        await req.payload.update({
-          collection: "donors",
-          id: user.id,
-          data: {
-            password: tempPassword,
-            magicLinkToken: null,
-            magicLinkExpiry: null,
-          } as any,
-        });
-
-        const loginResult = await req.payload.login({
-          collection: "donors",
-          data: { email: user.email, password: tempPassword },
-          req,
-        });
-
-        // Scramble password so it can't be reused
-        await req.payload.update({
-          collection: "donors",
-          id: user.id,
-          data: { password: crypto.randomBytes(32).toString("hex") } as any,
-        });
 
         return new Response(
           JSON.stringify({

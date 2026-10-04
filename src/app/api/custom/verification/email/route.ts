@@ -67,7 +67,10 @@ export async function POST(request: NextRequest) {
     });
 
     // Send verification email
-    const verificationBaseUrl = process.env.VERIFICATION_URL || `${request.nextUrl.origin}/api/custom/verification/email-link`;
+    // Don't derive this from the request: a spoofed Host header would make the
+    // business click a link to another domain and leak the verification key.
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const verificationBaseUrl = process.env.VERIFICATION_URL || `${baseUrl}/api/custom/verification/email-link`;
     const verificationURL = `${verificationBaseUrl}?key=${verificationKey}`;
     await payload.sendEmail({
       to: emailAddress,
