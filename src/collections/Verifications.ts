@@ -31,6 +31,9 @@ export const Verifications: CollectionConfig = {
         if (!req.user) {
           return Response.json({ error: "Unauthorized" }, { status: 401 });
         }
+        if (req.user.collection !== "users") {
+          return Response.json({ error: "Forbidden" }, { status: 403 });
+        }
 
         const id = req.routeParams?.id as string;
 
@@ -132,6 +135,9 @@ export const Verifications: CollectionConfig = {
       handler: async (req) => {
         if (!req.user) {
           return Response.json({ error: "Unauthorized" }, { status: 401 });
+        }
+        if (req.user.collection !== "users") {
+          return Response.json({ error: "Forbidden" }, { status: 403 });
         }
 
         const id = req.routeParams?.id as string;
