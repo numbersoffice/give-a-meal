@@ -3,6 +3,15 @@ import { getPayload } from "payload";
 import config from "@payload-config";
 import { NextRequest, NextResponse } from "next/server";
 
+async function assertItemBelongsToBusiness(itemId: string, businessId: string) {
+  const payload = await getPayload({ config });
+  const item = await payload
+    .findByID({ collection: "items", id: itemId, depth: 0 })
+    .catch(() => null);
+  if (!item || String(item.business) !== String(businessId))
+    throw new ApiError(404, "Item not found at your business.");
+}
+
 // editItem
 export async function PUT(
   request: NextRequest,
@@ -18,6 +27,8 @@ export async function PUT(
       throw new ApiError(400, "Missing parameter: itemId.");
     if (!title && !description)
       throw new ApiError(400, "Missing parameter: title or description.");
+
+    await assertItemBelongsToBusiness(itemId, businessId);
 
     const payload = await getPayload({ config });
 
@@ -49,6 +60,8 @@ export async function DELETE(
 
     if (!itemId)
       throw new ApiError(400, "Missing parameter: itemId.");
+
+    await assertItemBelongsToBusiness(itemId, businessId);
 
     const payload = await getPayload({ config });
 
