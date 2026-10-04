@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     // Verify admin user
     const { user } = await payload.auth({ headers: request.headers });
-    if (!user) {
+    if (user?.collection !== "users") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

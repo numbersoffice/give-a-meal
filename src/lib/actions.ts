@@ -13,7 +13,7 @@ export async function updateProfileName(formData: FormData) {
   const hdrs = await headers();
   const result = await payload.auth({ headers: hdrs });
 
-  if (!result.user) throw new Error("Not authorized");
+  if (result.user?.collection !== "donors") throw new Error("Not authorized");
 
   const rawFormData = {
     name: formData.get("profileName"),

@@ -14,7 +14,7 @@ export async function verifyAuth(request: NextRequest): Promise<AuthData> {
   const headers = request.headers;
   const result = await payload.auth({ headers });
 
-  if (result.user) {
+  if (result.user?.collection === "businessUsers") {
     return { uid: result.user.id, email: result.user.email };
   } else {
     throw new ApiError(401, "Invalid token.");
@@ -35,7 +35,7 @@ export async function verifyBusinessMembership(
   const { docs } = await payload.find({
     collection: "businessUsers",
     where: {
-      email: { equals: authData.email },
+      id: { equals: authData.uid },
       or: [
         { ownedBusinesses: { in: [businessId] } },
         { staffBusinesses: { in: [businessId] } },
